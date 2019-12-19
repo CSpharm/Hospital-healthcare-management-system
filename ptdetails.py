@@ -1,6 +1,7 @@
 from tkinter import *
 import sqlite3
 import tkinter.messagebox
+from Appointments import *
 
 # connect to the database for appointments
 conn = sqlite3.connect('Database.db')
@@ -128,15 +129,15 @@ class WindowForLogin:
         self.val11 = self.pwright_ent.get()
 
         result1 = c.execute("SELECT ID,password FROM ptbasic")
+        dict = {}
+
         for row in result1:
             i = row[0]
-            print(i)
             p = row[1]
-            print(p)
+            dict[i]=p
+
             if i not in li_ID:
-                li_ID.append(int(i))
-            if (int(self.val10) == i) and (self.val11 !=p):
-                tkinter.messagebox.showinfo('Warning', 'Invalid Password.')
+                li_ID.append(i)
 
         if self.val10 == '' or self.val11 == '':
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
@@ -144,11 +145,29 @@ class WindowForLogin:
         elif len(self.val10)!= 10:
             tkinter.messagebox.showinfo('Warning', 'Please enter your 10-digit NHS number')
 
+        elif dict.get(int(self.val10)) != int(self.val11):
+            tkinter.messagebox.showinfo('Warning', 'Invalid Password.')
+
         elif int(self.val10) not in li_ID:
             tkinter.messagebox.showinfo('Warning', 'Invalid NHS number.')
 
         else:
-            print('Login successful!')
+            tkinter.messagebox.showinfo('Confirmation','Login successful!')
+            # create the object
+            root1 = Tk()
+            r1 = WindowForAppointments(root1)
+
+            # resolution of the window
+            root1.geometry('1200x720+0+0')
+
+            # preventing the resize feature
+            root1.resizable(False, False)
+
+            # end the loop
+            root1.mainloop()
+
+
+
 
 # create the object
 root = Tk()
