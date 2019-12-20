@@ -118,7 +118,7 @@ class WindowForLogin:
         if self.val1 == '' or self.val2 == '' or self.val3 =='' or self.val4 == '' or self.val5 == '' or self.val6 == '' or self.val7 == '' or self.val8 == '':
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
         else:
-            sql = "INSERT INTO ptbasic (Id,ptName,password,age,gender,phone,address,birthday)VALUES(?,?,?,?,?,?,?,?)"
+            sql = "INSERT INTO ptbasic (ptID,ptName,password,age,gender,phone,address,birthday)VALUES(?,?,?,?,?,?,?,?)"
             c.execute(sql,(self.val1, self.val2, self.val3, self.val4, self.val5, self.val6, self.val7,self.val8))
             conn.commit()
             tkinter.messagebox.showinfo('Confirmation', 'registration for'+ str(self.val2)+ 'has been submitted. Now you can login')
@@ -128,7 +128,7 @@ class WindowForLogin:
         self.val10 = self.idright_ent.get()
         self.val11 = self.pwright_ent.get()
 
-        result1 = c.execute("SELECT ID,password FROM ptbasic")
+        result1 = c.execute("SELECT ptID,password FROM ptbasic")
         dict = {}
 
         for row in result1:

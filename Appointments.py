@@ -50,11 +50,11 @@ class WindowForAppointments:
             self.d2.place(x=450, y=50 + 70 * count)
 
         # NHS number
-        self.id = Label(self.right2, text="NHS number", font=('arial 17 bold'), fg='black', bg='lightgreen')
+        self.id = Label(self.right2, text="NHS number:   ", font=('arial 17 bold'), fg='black', bg='lightgreen')
         self.id.place(x=0, y=50)
 
         # patients' name
-        self.ptname = Label(self.right2, text="Patient's Name:", font=('arial 17 bold'), fg='black', bg='lightgreen')
+        self.ptname = Label(self.right2, text="Patient's Name:   ", font=('arial 17 bold'), fg='black', bg='lightgreen')
         self.ptname.place(x=0,y=100)
 
         # Button to add an appointment
@@ -69,6 +69,7 @@ class WindowForAppointments:
         for row in dr_namedate2:
             li_dr_name_date.append(row[0])
             count2 +=1
+            print(count)
 
             if int(count) == int(count2):
                 # exact Dr.name
@@ -93,4 +94,3 @@ class WindowForAppointments:
             #c.execute(sql,(self.val1, self.val2, self.val3, self.val4, self.val5, self.val6, self.val7))
             #conn.commit()
             #tkinter.messagebox.showinfo('Confirmation', 'Appointment for'+ str(self.val2)+ 'has been submitted.')
-
