@@ -89,6 +89,7 @@ class WindowForLogin:
 
         # entry for right labels
         self.idright_ent = Entry(self.right, width=20)
+        self.idright_ent.insert(END, "1234567890")
         self.idright_ent.place(x=200, y=140)
 
         self.pwright_ent = Entry(self.right, width=20)
@@ -155,7 +156,7 @@ class WindowForLogin:
             tkinter.messagebox.showinfo('Confirmation','Login successful!')
             # create the object
             root1 = Tk()
-            r1 = WindowForAppointments(root1)
+            r1 = WindowForAppointments(root1,self.val10)
 
             # resolution of the window
             root1.geometry('1200x720+0+0')
