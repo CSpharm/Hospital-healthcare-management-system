@@ -99,6 +99,15 @@ class WindowForstaffLogin:
         self.stafflo.place(x=200, y=300)
 
     def staffregister(self):
+
+        re_staff_id = c_staff_reg.execute("SELECT staffID FROM staffbasic")
+
+        for row in re_staff_id:
+            i = row[0]
+
+            if i not in li_exi_staffID:
+                li_exi_staffID.append(i)
+
         # getting the user inputs
         self.val20 = self.staffidleft_ent3.get()
         self.val21 = self.nameleft_ent3.get()
@@ -111,6 +120,13 @@ class WindowForstaffLogin:
 
         if self.val20 == '' or self.val21 == '' or self.val22 == '' or self.val23 == '' or self.val24 == '' or self.val25 == '' or self.val26 == '' or self.val27 == '':
             tkinter.messagebox.showinfo('Warning', 'Please fill up all the boxes')
+
+        elif len(self.val20) != 4:
+            tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. Please enter 4-digit staff ID')
+
+        elif int(self.val20) in li_exi_staffID:
+            tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. The ID is already in the database')
+
         else:
             sql3 = "INSERT INTO staffbasic (staffID,staffName,password,age,gender,phone,isDr,Date1)VALUES(?,?,?,?,?,?,?,?)"
             c_staff_reg.execute(sql3,(self.val20, self.val21, self.val22, self.val23, self.val24, self.val25, self.val26, self.val27))

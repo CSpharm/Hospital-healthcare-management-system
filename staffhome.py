@@ -32,9 +32,9 @@ class WindowForstaffHome:
         self.bu_man_stabasic = Button(self.leftsth, text='Manage staff basic files', width=25, height=2, bg='white', command=self.man_stabasic)
         self.bu_man_stabasic.place(x=200, y=300)
 
-        re_staffID = c_staff_home.execute("SELECT staffID from staffbasic WHERE isDr = 1")
+        re_staID = c_staff_home.execute("SELECT staffID from staffbasic WHERE isDr = 1")
         # Buttons for Dr.
-        for staID in re_staffID:
+        for staID in re_staID:
             if int(self.staffID) == int(staID[0]):
                 self.bu_addGP = Button(self.rightsth, text='Add new GP', width=25, height=2, bg='white',
                                        command=self.addGP)

@@ -1,6 +1,7 @@
 from tkinter import *
 import sqlite3
 import tkinter.messagebox
+import tkinter.font as tkFont
 import datetime
 
 # connect to the database for appointments
@@ -14,13 +15,21 @@ class WindowForAppointments:
 
         self.userID = val10
         self.a = a
-        self.d1 = []
+        self.dateLabel = []
 
         # create a frame
-        self.left2 = Frame(a, width=500, height = 720, bg='pink')
+        self.right2 = Frame(a, width= 700, height = 700, bg = 'lightgreen')
+        self.right2.pack(side=RIGHT,fill='x')
+
+        # 用一個Frame當為主畫面的左邊 Frame
+        self.left2 = Frame(a, width=500, height=700, bg='pink')
         self.left2.pack(side=LEFT)
-        self.right2 = Frame(a, width= 700, height = 720, bg = 'lightgreen')
-        self.right2.pack(side=RIGHT)
+        # topLeft 是 左邊 Frame 的上半部
+        self.topLeft = Frame(self.left2, width= 500, height = 200, bg = 'pink')
+        self.topLeft.pack(side=TOP, fill='x')
+        # downLeft 是 左邊 Frame 的下半部
+        self.downLeft = Frame(self.left2, width= 500, height = 500, bg ='red')
+        self.downLeft.pack(side=BOTTOM, fill='x')
 
         # heading
         self.lh2 = Label(self.left2, text="Appointments",font = ('arial 40 bold'),fg='black',bg='pink')
@@ -32,31 +41,33 @@ class WindowForAppointments:
         self.date1 = Label(self.left2, text="Date", font=('arial 20 bold'), fg='black', bg='pink')
         self.date1.place(x=250, y=80)
 
+        # set scrollbar
+        scrollbar = Scrollbar(self.downLeft)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        # create a font
+        f1 = tkFont.Font(family='times', size='17', weight='bold')
+
+        # 醫師名字的清單，此Listbox的長和寬會和 downLeft Frame 一樣大小
+        drnameList = Listbox(self.downLeft, yscrollcommand=scrollbar.set, width=500, height=100,font=f1)
+
         # Print the Dr. and their dates
         dr_namedate = c_bookapp.execute("SELECT staffName,Date1 FROM staffbasic WHERE isDr = 1 ")
-        count = 0
         for row in dr_namedate:
             n = row[0]
             d1 = row[1]
-            count += 1
-            self.drname = Label(self.left2, text=n, font=('arial 20 bold'), fg='black', bg='pink')
-            self.drname.place(x=0, y=50 + 60 * count)
-            self.d1.append(Label(self.left2, text=d1, font=('arial 20 bold'),fg='black',bg='pink'))
-        count = 1
+            drnameList.insert(END, str(n) + '     ' + str(d1))
 
-        for td in self.d1:
-            td.place(x=250, y=50 + 60 * count)
-            count += 1
+        drnameList.pack(side=LEFT, fill = BOTH)
+        scrollbar.config(command=drnameList.yview)
 
         # right labels:NHS number
         self.id = Label(self.right2, text="NHS number:   "+ str(self.userID), font=('arial 17 bold'), fg='black', bg='lightgreen')
         self.id.place(x=0, y=50)
 
         # right labels:pt name
-        re_ptloginname = c_bookapp.execute("SELECT ptID,ptName FROM ptbasic")
+        re_ptloginname = c_bookapp.execute("SELECT ptName FROM ptbasic WHERE ptID = (?)",(self.userID,))
         for row in re_ptloginname:
-            if row[0] == int(self.userID):
-                ptloginname = row[1]
+            ptloginname = row[0]
 
         self.ptname = Label(self.right2, text="Patient's Name:  "+ ptloginname, font=('arial 17 bold'), fg='black', bg='lightgreen')
         self.ptname.place(x=0,y=100)
@@ -130,14 +141,6 @@ class WindowForAppointments:
             self.approved_view.place(x=350, y=300 + 60 * count2)
         self.li_appID = li_appID
         self.can_available = can_available
-
-        for row in dr_namedate:
-            n = row[0]
-            d1 = row[1]
-            count += 1
-            self.drname = Label(self.left2, text=n, font=('arial 20 bold'), fg='black', bg='pink')
-            self.drname.place(x=0, y=50 + 60 * count)
-            self.d1.append(Label(self.left2, text=d1, font=('arial 20 bold'), fg='black', bg='pink'))
 
     # Function to call when the submit button is clicked
     def add_appointment(self):
@@ -220,7 +223,7 @@ class WindowForAppointments:
             self.li_appID = li_appID
             self.can_available = can_available
 
-# Function to call when the cancel button is clicked
+    # Function to call when the cancel button is clicked
     def cancel_appointment(self):
         self.val17 = self.cancelbooking_ent.get()
 
@@ -262,3 +265,17 @@ class WindowForAppointments:
 
                 self.approved_view = Label(self.right2, text=isApproved_view, font=('arial 17 bold'), fg='blue',bg='lightgreen')
                 self.approved_view.place(x=350, y=300 + 60 * count2)
+
+# Testing code
+# create the object
+root1 = Tk()
+r1 = WindowForAppointments(root1, "1234567890")
+
+# resolution of the window
+root1.geometry('1200x720+0+0')
+
+# preventing the resize feature
+root1.resizable(False, False)
+
+# end the loop
+root1.mainloop()

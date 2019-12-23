@@ -5,6 +5,7 @@ import sqlite3
 # connect to the database on register page
 conn_addGP = sqlite3.connect('Database.db')
 c_addGP = conn_addGP.cursor()
+li_ex_staffID = []
 
 class WindowForaddGP:
     def __init__(self,ad):
@@ -67,5 +68,41 @@ class WindowForaddGP:
         self.date_entad = Entry(self.leftad, width=15)
         self.date_entad.place(x=250, y=520)
 
-        
+        # Button to add new GP
+        self.bu_addGP = Button(self.leftad, text='Submit', width=15, height=2, bg='white',command=self.add_GP)
+        self.bu_addGP.place(x=250, y=560)
 
+    def add_GP(self):
+
+        re_staffID = c_addGP.execute("SELECT staffID FROM staffbasic")
+
+        for row in re_staffID:
+            i = row[0]
+
+            if i not in li_ex_staffID:
+                li_ex_staffID.append(i)
+
+        # getting the user inputs
+        self.val44 = self.staffidleft_entad.get()
+        self.val45 = self.nameleft_entad.get()
+        self.val46 = self.pwleft_entad.get()
+        self.val47 = self.age_entad.get()
+        self.val48 = self.gender_entad.get()
+        self.val49 = self.phone_entad.get()
+        self.val50 = self.isdr_entad.get()
+        self.val51 = self.date_entad.get()
+
+        if self.val44 == '' or self.val45 == '' or self.val46 == '' or self.val47 == '' or self.val48 == '' or self.val49 == '' or self.val50 == '' or self.val51 == '':
+            tkinter.messagebox.showinfo('Warning', 'Please fill up all the boxes')
+
+        elif len(self.val44) != 4:
+            tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. Please enter 4-digit staff ID')
+
+        elif int(self.val44) in li_ex_staffID:
+            tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. The ID is already in the database')
+
+        else:
+            sql6 = "INSERT INTO staffbasic (staffID,staffName,password,age,gender,phone,isDr,Date1)VALUES(?,?,?,?,?,?,?,?)"
+            c_addGP.execute(sql6, (self.val44, self.val45, self.val46, self.val47, self.val48, self.val49, self.val50, self.val51))
+            conn_addGP.commit()
+            tkinter.messagebox.showinfo('Confirmation', 'registration for ' + self.val45 + ' is successful.')

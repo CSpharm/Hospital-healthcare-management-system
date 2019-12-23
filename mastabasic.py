@@ -39,8 +39,10 @@ class WindowForMan_stabasic:
 
             if sta[7] == 0:
                 sta_isDr_view = 'not'
-            else:
+            elif sta[7] == 1:
                 sta_isDr_view = 'is'
+            else:
+                sta_isDr_view = 'Unsure'
 
 
             # labels
@@ -115,7 +117,7 @@ class WindowForMan_stabasic:
         if self.val38 == '' or self.val39 == '' or self.val40 =='' or self.val41 == '' or self.val42 == '' or self.val43 == '' :
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
         else:
-            tkinter.messagebox.showinfo('Confirmation', 'modification for '+ self.val38 + 'is successful.')
+            tkinter.messagebox.showinfo('Confirmation', 'modification for  '+ self.val38 + ' is successful.')
             c_mastabasic.execute("DELETE FROM staffbasic WHERE staffID = (?)", (self.staffID,))
             conn_mastabasic.commit()
             sql5 = "INSERT INTO staffbasic (staffID,staffName,password,age,gender,phone,Date1)VALUES(?,?,?,?,?,?,?)"
