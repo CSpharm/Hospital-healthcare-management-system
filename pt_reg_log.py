@@ -168,7 +168,7 @@ class WindowForptLogin:
             root1.geometry('1200x720+0+0')
 
             # preventing the resize feature
-            root1.resizable(True,True)
+            root1.resizable(False,False)
 
             # end the loop
             root1.mainloop()

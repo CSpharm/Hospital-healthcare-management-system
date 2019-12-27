@@ -46,10 +46,9 @@ class WindowForMan_stabasic:
 
 
             # labels
-            # Left Labels
-            self.staID = Label(self.leftmastab, text="Your staff ID: "+ str(staID_view), font=('arial 20 bold'), fg='black', bg='pink')
-            self.staID.place(x=0, y=80)
-
+            # ID
+            self.staID = Label(self.rightmastab, text="Your staff ID: "+ str(staID_view), font=('arial 20 bold'), fg='black', bg='light yellow')
+            self.staID.place(x=0, y=40)
             # staff's name
             self.nameview = Label(self.rightmastab, text="Your name", font=('arial 20 bold'), fg='black', bg='light yellow')
             self.nameview.place(x=0, y=110)

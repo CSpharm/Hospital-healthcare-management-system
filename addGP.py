@@ -14,8 +14,6 @@ class WindowForaddGP:
         # create a frame
         self.leftad = Frame(ad, width=630, height = 720, bg='pink')
         self.leftad.pack(side=LEFT)
-        self.rightad = Frame(ad, width= 570, height = 720, bg = 'plum3')
-        self.rightad.pack(side=RIGHT)
 
         # headings
         self.lhad = Label(self.leftad, text="Add new GP", font=('arial 40 bold'), fg='black', bg='pink')
