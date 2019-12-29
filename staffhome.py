@@ -184,7 +184,7 @@ class WindowForstaffHome:
         self.val52 = self.ptID_ent.get()
 
         root9 = Tk()
-        r9 = WindowForpres(root9, self.val52)
+        r9 = WindowForpres(root9, self.val52, self.staffID)
 
         # resolution of the window
         root9.geometry('1200x720+0+0')
