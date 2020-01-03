@@ -1,13 +1,6 @@
 import tkinter.messagebox
 from appointments import *
 
-# connect to the database on register page
-conn_pt_reg = sqlite3.connect('Database.db')
-c_pt_reg = conn_pt_reg.cursor()
-
-# empty the list for existing pt ID
-li_exi_ptID = []
-
 class WindowForptLogin:
 
     def __init__(self,ptreg):
@@ -95,15 +88,24 @@ class WindowForptLogin:
         self.lo = Button(self.right, text='Patient login', width=20, height=2, bg='white', command=self.login)
         self.lo.place(x=200, y=300)
 
-    # Function to call when the button is clicked
+    # Function for pt to register
     def register(self):
-        re_pt_id = c_pt_reg.execute("SELECT ptID FROM ptbasic")
+
+        # connect to the database
+        conn_existID = sqlite3.connect('Database.db')
+        c_existID = conn_existID.cursor()
+
+        # empty the list for existing pt ID
+        li_exi_ptID = []
+
+        re_pt_id = c_existID.execute("SELECT ptID FROM ptbasic")
 
         for row in re_pt_id:
             i = row[0]
+            li_exi_ptID.append(i)
 
-            if i not in li_exi_ptID:
-                li_exi_ptID.append(i)
+        conn_existID.commit()
+        conn_existID.close()
 
         # getting the user inputs
         self.val1 = self.idleft_ent.get()
@@ -118,33 +120,47 @@ class WindowForptLogin:
         if self.val1 == '' or self.val2 == '' or self.val3 =='' or self.val4 == '' or self.val5 == '' or self.val6 == '' or self.val7 == '' or self.val8 == '':
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
 
-        elif len(self.val1) != 10:
+        elif len(self.val1) != 10 or (not self.val1.isdigit()):
             tkinter.messagebox.showinfo('Warning', 'Invalid NHS number. Please enter 10-digit NHS number')
 
         elif int(self.val1) in li_exi_ptID:
             tkinter.messagebox.showinfo('Warning', 'Invalid NHS number. The number is already in the database')
 
+        elif not self.val4.isdigit() :
+            tkinter.messagebox.showinfo('Warning', 'Invalid age. Please enter only numbers')
+
         else:
+            # connect to the database
+            conn_ptreg = sqlite3.connect('Database.db')
+            c_ptreg = conn_ptreg.cursor()
+
             sql = "INSERT INTO ptbasic (ptID,ptName,password,age,gender,phone,address,allergy)VALUES(?,?,?,?,?,?,?,?)"
-            c_pt_reg.execute(sql,(self.val1, self.val2, self.val3, self.val4, self.val5, self.val6, self.val7,self.val8))
-            conn_pt_reg.commit()
-            tkinter.messagebox.showinfo('Confirmation', 'registration for'+ self.val2 + 'has been submitted. Now you can login')
+            c_ptreg.execute(sql,(self.val1, self.val2, self.val3, self.val4, self.val5, self.val6, self.val7,self.val8))
+            conn_ptreg.commit()
+            conn_ptreg.close()
+            tkinter.messagebox.showinfo('Confirmation', 'registration for '+ self.val2 + ' has been submitted. Now you can login')
 
     def login(self):
         # getting the user inputs
         self.val10 = self.idright_ent.get()
         self.val11 = self.pwright_ent.get()
 
-        re_pt_id_pw = c_pt_reg.execute("SELECT ptID,password FROM ptbasic")
+        # connect to the database on register page
+        conn_idpw = sqlite3.connect('Database.db')
+        c_idpw = conn_idpw.cursor()
+
+        re_pt_id_pw = c_idpw.execute("SELECT ptID,password FROM ptbasic")
         dict_pt_id_pw = {}
+        li_exi_ptID = []
 
         for row in re_pt_id_pw:
             i = row[0]
             p = row[1]
             dict_pt_id_pw[i]=p
+            li_exi_ptID.append(i)
 
-            if i not in li_exi_ptID:
-                li_exi_ptID.append(i)
+        conn_idpw.commit()
+        conn_idpw.close()
 
         if self.val10 == '' or self.val11 == '':
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')

@@ -2,19 +2,13 @@ from tkinter import *
 import sqlite3
 import tkinter.messagebox
 
-# connect to the database on register page
-conn_maptbasic = sqlite3.connect('Database.db')
-
-# create a cursor
-c_maptbasic = conn_maptbasic.cursor()
-
-# creat a blank list for exist ptID
-li_exist_ptID = []
-
 class WindowForMan_ptbasic:
-    def __init__(self, maptb, staffID):
-        self.staffID = staffID
+    def __init__(self, maptb, staffID,li_exi_ptID):
+
         self.maptb = maptb
+        self.staffID = staffID
+        self.li_exi_ptID = li_exi_ptID
+
         # create a frame
         self.leftmaptb = Frame(maptb, width=550, height=720, bg='pink')
         self.leftmaptb.pack(side=LEFT)
@@ -39,24 +33,28 @@ class WindowForMan_ptbasic:
 
     def ptIDsubmit(self):
 
-        # getting the user inputs
+        # getting user inputs
         self.val30 = self.ptIDleft_ent.get()
-
-        re_ptID = c_maptbasic.execute("SELECT ptID from ptbasic")
-        for row in re_ptID:
-            li_exist_ptID.append(row[0])
 
         if  self.val30 == '':
             tkinter.messagebox.showinfo('Warning','Please fill the box.')
 
+        elif not self.val30.isdigit():
+            tkinter.messagebox.showinfo('Warning','Please enter an integer.')
+
         elif len(self.val30) != 10:
             tkinter.messagebox.showinfo('Warning','Invalid NHS number length. Please re-enter a valid 10-digit NHS number.')
 
-        elif int(self.val30) not in li_exist_ptID:
-            tkinter.messagebox.showinfo('Warning',"The database doesn't have this patient.Please re-enter a valid number")
+        elif int(self.val30) not in self.li_exi_ptID:
+            tkinter.messagebox.showinfo('Warning',"The database doesn't have this patient. Please re-enter a valid number")
 
         else:
-            re_ptbasic = c_maptbasic.execute("SELECT ptID,ptName,password,age,gender,phone,address,allergy from ptbasic WHERE ptID = (?)",(self.val30,))
+            # connect to the database
+            conn_mapt = sqlite3.connect('Database.db')
+            # create a cursor
+            c_mapt = conn_mapt.cursor()
+
+            re_ptbasic = c_mapt.execute("SELECT ptID,ptName,password,age,gender,phone,address,allergy from ptbasic WHERE ptID = (?)",(self.val30,))
             for data in re_ptbasic:
                 ptID_view = data[0]
                 ptName_view = data[1]
@@ -69,29 +67,29 @@ class WindowForMan_ptbasic:
 
                 # labels
                 # NHS number
-                self.ptIDview = Label(self.rightmaptb, text="Patient's NHS number :" + str(ptID_view), font=('arial 20 bold'), fg='black',bg='light yellow')
-                self.ptIDview.place(x=0, y=40)
+                lptIDview = Label(self.rightmaptb, text="Patient's NHS number :" + str(ptID_view), font=('arial 20 bold'), fg='black',bg='light yellow')
+                lptIDview.place(x=0, y=40)
                 # patients' name
-                self.nameview = Label(self.rightmaptb, text="Patient's name", font=('arial 20 bold'), fg='black', bg='light yellow')
-                self.nameview.place(x=0, y=110)
+                lnameview = Label(self.rightmaptb, text="Patient's name", font=('arial 20 bold'), fg='black', bg='light yellow')
+                lnameview.place(x=0, y=110)
                 # password
-                self.pwview = Label(self.rightmaptb, text="Password", font=('arial 20 bold'), fg='black',bg='light yellow')
-                self.pwview.place(x=0, y=180)
+                lpwview = Label(self.rightmaptb, text="Password", font=('arial 20 bold'), fg='black',bg='light yellow')
+                lpwview.place(x=0, y=180)
                 # age
-                self.ageview = Label(self.rightmaptb, text='Age', font=('arial 20 bold'), fg='black', bg='light yellow')
-                self.ageview.place(x=0, y=250)
+                lageview = Label(self.rightmaptb, text='Age', font=('arial 20 bold'), fg='black', bg='light yellow')
+                lageview.place(x=0, y=250)
                 # gender
-                self.genderview = Label(self.rightmaptb, text='Gender', font=('arial 20 bold'), fg='black', bg='light yellow')
-                self.genderview.place(x=0, y=320)
+                lgenderview = Label(self.rightmaptb, text='Gender', font=('arial 20 bold'), fg='black', bg='light yellow')
+                lgenderview.place(x=0, y=320)
                 # phone
-                self.phoneview = Label(self.rightmaptb, text='Phone', font=('arial 20 bold'), fg='black', bg='light yellow')
-                self.phoneview.place(x=0, y=390)
+                lphoneview = Label(self.rightmaptb, text='Phone', font=('arial 20 bold'), fg='black', bg='light yellow')
+                lphoneview.place(x=0, y=390)
                 # address
-                self.addressview = Label(self.rightmaptb, text='Address', font=('arial 20 bold'), fg='black', bg='light yellow')
-                self.addressview.place(x=0, y=460)
+                laddressview = Label(self.rightmaptb, text='Address', font=('arial 20 bold'), fg='black', bg='light yellow')
+                laddressview.place(x=0, y=460)
                 # allergy
-                self.allergyview = Label(self.rightmaptb, text='Allergy', font=('arial 20 bold'), fg='black', bg='light yellow')
-                self.allergyview.place(x=0, y=530)
+                lallergyview = Label(self.rightmaptb, text='Allergy', font=('arial 20 bold'), fg='black', bg='light yellow')
+                lallergyview.place(x=0, y=530)
 
                 # entry for right labels
                 self.nameview_ent = Entry(self.rightmaptb, width=15)
@@ -122,10 +120,13 @@ class WindowForMan_ptbasic:
                 self.allergyview_ent.insert(END, str(allergy_view))
                 self.allergyview_ent.place(x=200, y=530)
 
+                conn_mapt.commit()
+
                 # button for submitting
                 self.modifysub = Button(self.rightmaptb, text="Submit", width=25, height=2,
                                           bg='white', command=self.modify_pt_submit)
                 self.modifysub.place(x=140, y=600)
+
 
     def modify_pt_submit(self):
 
@@ -140,10 +141,19 @@ class WindowForMan_ptbasic:
 
         if self.val31 == '' or self.val32 == '' or self.val33 =='' or self.val34 == '' or self.val35 == '' or self.val36 == '' :
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
+
+        elif (not self.val32.isdigit()) or (not self.val33.isdigit()):
+            tkinter.messagebox.showinfo('Warning','Password and age must be only integers.')
+
         else:
-            c_maptbasic.execute("DELETE FROM ptbasic WHERE ptID = (?)",(self.val30,))
-            conn_maptbasic.commit()
+            # connect to the database on register page
+            conn_submit = sqlite3.connect('Database.db')
+            # create a cursor
+            c_submit = conn_submit.cursor()
+            c_submit.execute("DELETE FROM ptbasic WHERE ptID = (?)",(self.val30,))
+
             sql4 = "INSERT INTO ptbasic (ptID,ptName,password,age,gender,phone,address,allergy)VALUES(?,?,?,?,?,?,?,?)"
-            c_maptbasic.execute(sql4,(self.val30,self.val31, self.val32, self.val33, self.val34, self.val35, self.val36, self.val37))
-            conn_maptbasic.commit()
+            c_submit.execute(sql4,(self.val30,self.val31, self.val32, self.val33, self.val34, self.val35, self.val36, self.val37))
+            conn_submit.commit()
+            conn_submit.close()
             tkinter.messagebox.showinfo('Confirmation', 'modification for '+ self.val31 + ' has been submitted.')

@@ -2,12 +2,11 @@ from tkinter import *
 import sqlite3
 import tkinter.messagebox
 import tkinter.font as tkFont
+import datetime
 
-# connect to the database for appointments
-conn_pre = sqlite3.connect('Database.db')
+today = datetime.date.today()
+t = str(today).split('-')
 
-# create a cursor
-c_pre = conn_pre.cursor()
 
 class WindowForpres:
     def __init__(self,p,val52,staffID):
@@ -16,18 +15,14 @@ class WindowForpres:
         self.p = p
         self.staffID = staffID
 
-        # 主畫面的右邊Frame
         self.rightp = Frame(p, width= 650, height = 720, bg = 'lightgreen')
         self.rightp.pack(side=RIGHT)
-        # 主畫面的左邊 Frame
         self.leftp = Frame(p, width=550, height=720, bg='pink')
         self.leftp.pack(side=LEFT)
 
-        # topLeft 是 左邊 Frame 的上半部
         self.topLeftp = Frame(self.leftp, width= 550, height = 360, bg = 'pink')
         self.topLeftp.pack(side=TOP)
-        # downLeft 是 左邊 Frame 的下半部
-        self.downLeftp = Frame(self.leftp, width= 550, height = 360, bg ='red')
+        self.downLeftp = Frame(self.leftp, width= 550, height = 360, bg ='pink')
         self.downLeftp.pack(side=BOTTOM)
 
         # create font
@@ -40,7 +35,8 @@ class WindowForpres:
         self.lhp.place(x=0,y=0)
         self.ldhp = Label(self.leftp, text="Prescription history", font=self.f2, fg='blue', bg='pink')
         self.ldhp.place(x=0, y=300)
-        self.ldfp = Label(self.leftp, text="No.  Date    Medicine                Day           Frequency   Admin.  Route  Dr.name",
+        self.ldfp = Label(self.leftp, text="No.     Date              Medicine                       Day     "
+                                           + "           Administration             Dr.name",
                           font=self.f2, fg='blue', bg='pink')
         self.ldfp.place(x=0, y=335)
         # Right heading
@@ -51,7 +47,12 @@ class WindowForpres:
         self.id = Label(self.leftp, text="NHS number: " + str(self.ptID), font=self.f1, fg='black',bg='pink')
         self.id.place(x=0, y=50)
 
-        re_pt = c_pre.execute("SELECT * FROM ptbasic WHERE ptID = (?)", (self.ptID,))
+        # connect to the database
+        conn_ptb = sqlite3.connect('Database.db')
+        # create a cursor
+        c_ptb = conn_ptb.cursor()
+
+        re_pt = c_ptb.execute("SELECT * FROM ptbasic WHERE ptID = (?)", (self.ptID,))
         for row in re_pt:
             ptname = row[1]
             age = row[3]
@@ -70,152 +71,194 @@ class WindowForpres:
         self.lphone.place(x=300, y=50)
         self.ladd = Label(self.leftp, text="Address:" + str(address), font=self.f1, fg='black', bg='pink')
         self.ladd.place(x=300, y=100)
+        self.ladd.place(x=300, y=100)
         self.lall = Label(self.leftp, text="Allergy:" + str(allergy), font=self.f1, fg='black', bg='pink')
         self.lall.place(x=300, y=150)
 
-        #set scrollbar
-        scrollbar = Scrollbar(self.downLeftp)
-        scrollbar.pack(side=RIGHT, fill=Y)
-        # 醫師名字的清單，此Listbox的長和寬會和 downLeft Frame 一樣大小
-        pre_List = Listbox(self.downLeftp, yscrollcommand=scrollbar.set, width=550, height=360,font=self.f3)
+        conn_ptb.commit()
+        conn_ptb.close()
 
-        re_pre = c_pre.execute("SELECT * FROM prescription WHERE ptID = (?)",(self.ptID,))
-        for r in re_pre:
-            orderno = r[5]
-            appdate = r[4]
-            med1 = r[6]
-            day1 = r[7]
-            dos1 = r[8]
-            fre1 = r[9]
-            adm1 = r[10]
-            rou1 = r[11]
-            med2 = r[12]
-            day2 = r[13]
-            dos2 = r[14]
-            fre2 = r[15]
-            adm2 = r[16]
-            rou2 = r[17]
-            med3 = r[18]
-            day3 = r[19]
-            dos3 = r[20]
-            fre3 = r[21]
-            adm3 = r[22]
-            rou3 = r[23]
-            Drname = r[3]
-            pre_List.insert(END, str(orderno)+ '    ' + str(appdate)+ '    '+str(med1) +' '+ str(dos1) + '         ' +
-                            str(day1) +'              '+ str(fre1) +'         '+ str(adm1) +'         '+ str(rou1)+ '     '+ str(Drname))
-            pre_List.insert(END,str(orderno) + '    ' + str(appdate) + '    ' + str(med2) + ' ' + str(dos2) + '         ' +
-                            str(day2) +'              ' + str(fre2) + '         ' + str(adm2) + '          ' + str(rou2)+ '       '+ str(Drname))
-            pre_List.insert(END, str(orderno) + '    ' + str(appdate) + '    ' + str(med3) + ' ' + str(dos3) + '         ' +
-                            str(day3) +'              ' + str(fre3) + '         ' + str(adm3) + '          ' + str(rou3) + '     ' + str(Drname))
+        # Button to see the px
+        self.bseepx = Button(self.leftp, text="See the prescription history", font=self.f1, fg='black', bg='pink', command=self.seepx)
+        self.bseepx.place(x=0, y=270)
+        # connect to the database
+        conn_drname = sqlite3.connect('Database.db')
+        # create a cursor
+        c_drname = conn_drname.cursor()
 
-
-        pre_List.pack(side=LEFT, fill = 'x')
-        scrollbar.config(command=pre_List.yview)
-
-        # right labels
-        self.lstaID = Label(self.rightp, text="Your Dr. ID: " +str(self.staffID), font=self.f1, fg='black', bg='lightgreen')
-        self.lstaID.place(x=0, y=50)
-
-        re_dr = c_pre.execute("SELECT staffName FROM staffbasic WHERE staffID = (?)", (self.staffID,))
+        re_dr = c_drname.execute("SELECT staffName FROM staffbasic WHERE staffID = (?)", (self.staffID,))
         for r in re_dr:
             drsname = r[0]
 
-        self.ldrname = Label(self.rightp, text="Dr's name: " +str(drsname), font=self.f1, fg='black', bg='lightgreen')
-        self.ldrname.place(x=200, y=50)
-        self.lapptime = Label(self.rightp, text="Appointment Date: " , font=self.f1, fg='black', bg='lightgreen')
-        self.lapptime.place(x=400, y=50)
+        conn_drname.commit()
+        conn_drname.close()
+        self.drsname = drsname
 
-        # labels for med 1
-        self.lmedicine1 = Label(self.rightp, text="Medicine 1 " , font=self.f1, fg='black', bg='lightgreen')
-        self.lmedicine1.place(x=0, y=150)
-        self.lmed1 = Label(self.rightp, text="Medicine's Name " , font=self.f1, fg='black', bg='lightgreen')
-        self.lmed1.place(x=0, y=200)
-        self.ldos1 = Label(self.rightp, text="Dosage ", font=self.f1, fg='black', bg='lightgreen')
-        self.ldos1.place(x=200, y=200)
-        self.lday1 = Label(self.rightp, text="Day ", font=self.f1, fg='black', bg='lightgreen')
-        self.lday1.place(x=300, y=200)
-        self.lfre1 = Label(self.rightp, text="Frequency ", font=self.f1, fg='black', bg='lightgreen')
-        self.lfre1.place(x=360, y=200)
-        self.lad1 = Label(self.rightp, text="Administration", font=self.f1, fg='black', bg='lightgreen')
-        self.lad1.place(x=470, y=200)
-        self.lfre1 = Label(self.rightp, text="Route ", font=self.f1, fg='black', bg='lightgreen')
-        self.lfre1.place(x=580, y=200)
+        # connect to the database
+        conn_date = sqlite3.connect('Database.db')
+        # create a cursor
+        c_date = conn_date.cursor()
 
-        # labels for med 2
-        self.lmedicine2 = Label(self.rightp, text="Medicine 2 ", font=self.f1, fg='black', bg='lightgreen')
-        self.lmedicine2.place(x=0, y=300)
-        self.lmed2 = Label(self.rightp, text="Medicine's Name ", font=self.f1, fg='black', bg='lightgreen')
-        self.lmed2.place(x=0, y=350)
-        self.ldos2 = Label(self.rightp, text="Dosage ", font=self.f1, fg='black', bg='lightgreen')
-        self.ldos2.place(x=200, y=350)
-        self.lday2 = Label(self.rightp, text="Day ", font=self.f1, fg='black', bg='lightgreen')
-        self.lday2.place(x=300, y=350)
-        self.lfre2 = Label(self.rightp, text="Frequency ", font=self.f1, fg='black', bg='lightgreen')
-        self.lfre2.place(x=360, y=350)
-        self.lad2 = Label(self.rightp, text="Administration", font=self.f1, fg='black', bg='lightgreen')
-        self.lad2.place(x=470, y=350)
-        self.lfre2 = Label(self.rightp, text="Route ", font=self.f1, fg='black', bg='lightgreen')
-        self.lfre2.place(x=580, y=350)
+        re_date = c_date.execute("SELECT appointmentTime,appID FROM 'appointments' WHERE (ptID = (?) AND DrID= (?)) "
+                                 "AND (isApproved = 2 or isApproved = 3)", (self.ptID,self.staffID))
 
-        # labels for med 3
-        self.lmedicine3 = Label(self.rightp, text="Medicine 3 ", font=self.f1, fg='black', bg='lightgreen')
-        self.lmedicine3.place(x=0, y=450)
-        self.lmed3 = Label(self.rightp, text="Medicine's Name ", font=self.f1, fg='black', bg='lightgreen')
-        self.lmed3.place(x=0, y=500)
-        self.ldos3 = Label(self.rightp, text="Dosage ", font=self.f1, fg='black', bg='lightgreen')
-        self.ldos3.place(x=200, y=500)
-        self.lday3 = Label(self.rightp, text="Day ", font=self.f1, fg='black', bg='lightgreen')
-        self.lday3.place(x=300, y=500)
-        self.lfre3 = Label(self.rightp, text="Frequency ", font=self.f1, fg='black', bg='lightgreen')
-        self.lfre3.place(x=360, y=500)
-        self.lad3 = Label(self.rightp, text="Administration", font=self.f1, fg='black', bg='lightgreen')
-        self.lad3.place(x=470, y=500)
-        self.lfre3 = Label(self.rightp, text="Route ", font=self.f1, fg='black', bg='lightgreen')
-        self.lfre3.place(x=580, y=500)
+        for re in re_date:
+            appDate = re[0]
+            todayappID = re[1]
+            aD1 = appDate.split('-')
+            li_appDate = []
 
-        # entry for right labels for med 1
-        self.med1_ent = Entry(self.rightp, width=15)
-        self.med1_ent.place(x=1, y=230)
-        self.dos1_ent = Entry(self.rightp, width=8)
-        self.dos1_ent.place(x=200, y=230)
-        self.day1_ent = Entry(self.rightp, width=3)
-        self.day1_ent.place(x=300, y=230)
-        self.fre1_ent = Entry(self.rightp, width=5)
-        self.fre1_ent.place(x=360, y=230)
-        self.ad1_ent = Entry(self.rightp, width=7)
-        self.ad1_ent.place(x=470, y=230)
-        self.rou1_ent = Entry(self.rightp, width=3)
-        self.rou1_ent.place(x=580, y=230)
+            if (aD1[0] < t[0]) or (aD1[0] == t[0] and aD1[1] < t[1] ) or (aD1[0] == t[0] and aD1[1] == t[1] and (aD1[2] <t[2])):
+                pass
+            elif (aD1[0] == t[0] and aD1[1] == t[1]) and (aD1[2] == t[2]):
+                self.todayappID = todayappID
+                li_appDate.append(appDate)
 
-        # entry for right labels for med 2
-        self.med2_ent = Entry(self.rightp, width=15)
-        self.med2_ent.place(x=1, y=380)
-        self.dos2_ent = Entry(self.rightp, width=8)
-        self.dos2_ent.place(x=200, y=380)
-        self.day2_ent = Entry(self.rightp, width=3)
-        self.day2_ent.place(x=300, y=380)
-        self.fre2_ent = Entry(self.rightp, width=5)
-        self.fre2_ent.place(x=360, y=380)
-        self.ad2_ent = Entry(self.rightp, width=7)
-        self.ad2_ent.place(x=470, y=380)
-        self.rou2_ent = Entry(self.rightp, width=3)
-        self.rou2_ent.place(x=580, y=380)
+                # right labels
+                self.lstaID = Label(self.rightp, text="Your Dr. ID: " + str(self.staffID), font=self.f1, fg='black',
+                                    bg='lightgreen')
+                self.lstaID.place(x=0, y=50)
+                self.ldrname = Label(self.rightp, text="Your name: " + str(self.drsname), font=self.f1, fg='black',
+                                     bg='lightgreen')
+                self.ldrname.place(x=200, y=50)
 
-        # entry for right labels for med 3
-        self.med3_ent = Entry(self.rightp, width=15)
-        self.med3_ent.place(x=1, y=530)
-        self.dos3_ent = Entry(self.rightp, width=8)
-        self.dos3_ent.place(x=200, y=530)
-        self.day3_ent = Entry(self.rightp, width=3)
-        self.day3_ent.place(x=300, y=530)
-        self.fre3_ent = Entry(self.rightp, width=5)
-        self.fre3_ent.place(x=360, y=530)
-        self.ad3_ent = Entry(self.rightp, width=7)
-        self.ad3_ent.place(x=470, y=530)
-        self.rou3_ent = Entry(self.rightp, width=3)
-        self.rou3_ent.place(x=580, y=530)
-        # Button to see appointment detail
+                self.ltoday = Label(self.rightp, text="Today: " + str(today), font=self.f1, fg='black', bg='lightgreen')
+                self.ltoday.place(x=400, y=50)
+                # label for the appointment date
+                self.lappdate = Label(self.rightp, text="Appointment Date:   " + str(li_appDate), font=self.f1,fg='black', bg='lightgreen')
+                self.lappdate.place(x=0, y=100)
 
-        self.seedt = Button(self.rightp, text="Submit" ,font=self.f1, fg='black', bg='lightgreen')
-        self.seedt.place(x=300, y=580)
+                # labels for med
+                self.lmed1 = Label(self.rightp, text="Medicine's Name ", font=self.f1, fg='black', bg='lightgreen')
+                self.lmed1.place(x=0, y=200)
+                self.ldos1 = Label(self.rightp, text="Dosage ", font=self.f1, fg='black', bg='lightgreen')
+                self.ldos1.place(x=200, y=200)
+                self.lday1 = Label(self.rightp, text="Day ", font=self.f1, fg='black', bg='lightgreen')
+                self.lday1.place(x=300, y=200)
+                self.lad1 = Label(self.rightp, text="Administration", font=self.f1, fg='black', bg='lightgreen')
+                self.lad1.place(x=470, y=200)
+
+                # entry for right labels for med 1
+                self.med1_ent = Entry(self.rightp, width=15)
+                self.med1_ent.place(x=1, y=230)
+                self.dos1_ent = Entry(self.rightp, width=8)
+                self.dos1_ent.place(x=200, y=230)
+                self.day1_ent = Entry(self.rightp, width=3)
+                self.day1_ent.place(x=300, y=230)
+                self.ad1_ent = Entry(self.rightp, width=7)
+                self.ad1_ent.place(x=470, y=230)
+
+                # Button to add px
+                self.sub = Button(self.rightp, text="Submit", font=self.f1, fg='black', bg='lightgreen',
+                                   command=self.addpx)
+                self.sub.place(x=280, y=280)
+
+                # Label to delete a prescription
+                self.ldp = Label(self.rightp, text="Delete today's prescription", font=self.f2, fg='black', bg='lightgreen')
+                self.ldp.place(x=0, y=380)
+                self.le = Label(self.rightp, text="Enter the prescription no.", font=self.f1, fg='black', bg='lightgreen')
+                self.le.place(x=0, y=430)
+                # entry to delete a presciption
+                self.pno_ent = Entry(self.rightp, width=3)
+                self.pno_ent.place(x=200, y=430)
+                # Button to submit
+                self.subd = Button(self.rightp, text="Submit", font=self.f1, fg='black', bg='lightgreen',
+                                   command=self.delpx)
+                self.subd.place(x=280, y=480)
+
+            else:
+                li_appDate.append(appDate)
+
+        conn_date.commit()
+        conn_date.close()
+
+
+
+    def seepx(self):
+
+        # set scrollbar
+        scrollbar = Scrollbar(self.downLeftp)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        # set a list to fit the frame
+        pre_List = Listbox(self.downLeftp, yscrollcommand=scrollbar.set, width=550, height=360,font=self.f3)
+
+        # connect to the database
+        conn_phis = sqlite3.connect('Database.db')
+        # create a cursor
+        c_phis = conn_phis.cursor()
+
+        re_pre = c_phis.execute("SELECT * FROM prescription WHERE ptID = (?)",(self.ptID,))
+        for r in re_pre:
+            orderno = r[4]
+            appdate = r[3]
+            med1 = r[5]
+            day1 = r[6]
+            dos1 = r[7]
+            adm1 = r[8]
+            Drname = r[2]
+            pre_List.insert(END, str(orderno)+ '    ' + str(appdate)+ '         '+str(med1) + '   '+ str(dos1) +'     '
+                            +str(day1) +'                 '+ str(adm1) +'               '+ str(Drname))
+
+        conn_phis.commit()
+        conn_phis.close()
+
+        pre_List.pack(side=LEFT, fill = 'x')
+        scrollbar.config(command=pre_List.yview)
+        scrollbar.config(command=pre_List.yview)
+
+    def addpx(self):
+
+        self.val54 = self.med1_ent.get()
+        self.val55 = self.dos1_ent.get()
+        self.val56 = self.day1_ent.get()
+        self.val57 = self.ad1_ent.get()
+
+        if self.val54 == '' or self.val55 == '' or self.val56 == '' or self.val57 == '':
+            tkinter.messagebox.showinfo('Warning', 'Please fill the boxes.')
+
+        elif not self.val56.isdigit():
+            tkinter.messagebox.showinfo('Warning', 'The day must be an integer.')
+
+        else:
+            # connect to the database
+            conn_addp = sqlite3.connect('Database.db')
+            # create a cursor
+            c_addp = conn_addp.cursor()
+
+            sql7 = "INSERT INTO 'prescription' (ptID, DrID, DrName, appointmentTime,medname1,day1,dosage1,adm1,appID) VALUES(?,?,?,?,?,?,?,?,?)"
+            c_addp.execute(sql7, (self.ptID,self.staffID, self.drsname, today,self.val54,self.val56,self.val55,self.val57,self.todayappID))
+            conn_addp.commit()
+            c_addp.execute("UPDATE appointments SET isApproved = 3 WHERE appID = (?)", (self.todayappID,))
+            conn_addp.commit()
+            conn_addp.close()
+
+            tkinter.messagebox.showinfo('Confirmation', ' Successful!')
+
+    def delpx(self):
+
+        self.val58 = self.pno_ent.get()
+
+        t = str(today).split('-')
+
+        # connect to the database
+        conn_date = sqlite3.connect('Database.db')
+        # create a cursor
+        c_date = conn_date.cursor()
+
+        re_predate = c_date.execute(" SELECT appointmentTime FROM 'prescription' WHERE orderNo = (?)",(self.val58,))
+        for result in re_predate:
+            appDate = result[0]
+            aD2 = appDate.split('-')
+
+            if not self.val58.isdigit():
+                tkinter.messagebox.showinfo('Warning', 'The number should be an integer.')
+
+            elif (aD2[0] == t[0] and aD2[1] == t[1]) and aD2[2] == t[2]:
+                c_date.execute("DELETE FROM 'prescription' WHERE orderNo = (?)", (self.val58))
+                tkinter.messagebox.showinfo('Confirmation', 'Successful!')
+            else:
+                tkinter.messagebox.showinfo('Warning', "This appointment date is not today")
+
+        conn_date.commit()
+        conn_date.close()
+

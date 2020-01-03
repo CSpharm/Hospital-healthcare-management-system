@@ -1,13 +1,6 @@
 from tkinter import *
 from pt_reg_log import WindowForptLogin
 from staff_reg_log import WindowForstaffLogin
-import sqlite3
-
-# connect to the database on register page
-conn_home = sqlite3.connect('Database.db')
-
-# create a cursor
-c_home = conn_home.cursor()
 
 # create a window for home
 class WindowForHome:
@@ -28,7 +21,7 @@ class WindowForHome:
         # Button for pt
         self.bu_pt = Button(self.lefth, text='I am a patient', width=20, height=2, bg='white', command=self.pt)
         self.bu_pt.place(x=200, y=300)
-        # Button to login
+        # Button for staff
         self.bu_dr = Button(self.righth, text='I am a staff', width=20, height=2, bg='white', command=self.dr)
         self.bu_dr.place(x=200, y=300)
 
@@ -61,6 +54,7 @@ class WindowForHome:
 
         # end the loop
         root3.mainloop()
+
 
 rooth = Tk()
 rh = WindowForHome(rooth)

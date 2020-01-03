@@ -3,13 +3,6 @@ import tkinter.messagebox
 import sqlite3
 from staffhome import WindowForstaffHome
 
-# connect to the database on register page
-conn_staff_reg = sqlite3.connect('Database.db')
-c_staff_reg = conn_staff_reg.cursor()
-
-# empty the list for existing staff ID
-li_exi_staffID = []
-
 # create a window for stafflogin
 class WindowForstaffLogin:
     def __init__(self,staffreg):
@@ -90,7 +83,6 @@ class WindowForstaffLogin:
         self.pwright_ent3.insert(END, "2")
         self.pwright_ent3.place(x=200, y=200)
 
-
         # Button to register
         self.staffre = Button(self.left3, text='staff register', width=15, height=2, bg='white', command=self.staffregister)
         self.staffre.place(x=250, y=580)
@@ -99,14 +91,6 @@ class WindowForstaffLogin:
         self.stafflo.place(x=200, y=300)
 
     def staffregister(self):
-
-        re_staff_id = c_staff_reg.execute("SELECT staffID FROM staffbasic")
-
-        for row in re_staff_id:
-            i = row[0]
-
-            if i not in li_exi_staffID:
-                li_exi_staffID.append(i)
 
         # getting the user inputs
         self.val20 = self.staffidleft_ent3.get()
@@ -118,40 +102,78 @@ class WindowForstaffLogin:
         self.val26 = self.isdr_ent3.get()
         self.val27 = self.date_ent3.get()
 
+        # connect to the database
+        conn_ID = sqlite3.connect('Database.db')
+        c_ID = conn_ID.cursor()
+        re_staff_id = c_ID.execute("SELECT staffID FROM staffbasic")
+
+        # create a list to store exist staffIDs
+        li_exi_staffID_reg = []
+
+        for row in re_staff_id:
+            i = row[0]
+            li_exi_staffID_reg.append(i)
+
+        conn_ID.commit()
+        conn_ID.close()
+
         if self.val20 == '' or self.val21 == '' or self.val22 == '' or self.val23 == '' or self.val24 == '' or self.val25 == '' or self.val26 == '' or self.val27 == '':
             tkinter.messagebox.showinfo('Warning', 'Please fill up all the boxes')
 
-        elif len(self.val20) != 4:
+        elif len(self.val20) != 4 or (not self.val20.isdigit()):
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. Please enter 4-digit staff ID')
 
-        elif int(self.val20) in li_exi_staffID:
+        elif int(self.val20) in li_exi_staffID_reg:
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. The ID is already in the database')
 
+        elif (not self.val22.isdigit()) or (not self.val23.isdigit())or (not self.val26.isdigit()):
+            tkinter.messagebox.showinfo('Warning', 'Password, Age and isDr must be only integers.')
+
+        elif (self.val26 !=0) or (self.val26 !=1):
+            tkinter.messagebox.showinfo('Warning', 'isDr must be 0 or 1.')
+
         else:
-            sql3 = "INSERT INTO staffbasic (staffID,staffName,password,age,gender,phone,isDr,Date1)VALUES(?,?,?,?,?,?,?,?)"
-            c_staff_reg.execute(sql3,(self.val20, self.val21, self.val22, self.val23, self.val24, self.val25, self.val26, self.val27))
-            conn_staff_reg.commit()
+            # connect to database
+            conn_sta_reg = sqlite3.connect('Database.db')
+            c_sta_reg = conn_sta_reg.cursor()
+
+            sql3="INSERT INTO staffbasic(staffID,staffName,password,age,gender,phone,isDr,Date1)VALUES(?,?,?,?,?,?,?,?)"
+            c_sta_reg.execute(sql3,(self.val20, self.val21, self.val22, self.val23, self.val24, self.val25, self.val26, self.val27))
+            conn_sta_reg.commit()
+            conn_sta_reg.close()
             tkinter.messagebox.showinfo('Confirmation','registration for ' + self.val21 + ' is successful.')
 
-
     def stafflogin(self):
+
         # getting the user inputs
         self.val28 = self.idright_ent3.get()
         self.val29 = self.pwright_ent3.get()
 
-        re_staff_id_pw = c_staff_reg.execute("SELECT staffID,password FROM staffbasic")
+        # connect to database
+        conn_sta_idpw = sqlite3.connect('Database.db')
+        c_sta_idpw = conn_sta_idpw.cursor()
+
+        re_staff_id_pw = c_sta_idpw.execute("SELECT staffID,password FROM staffbasic")
+
+        # create a dictionary to store the id and password
         dict_staff_id_pw = {}
+        # create a list to store exist staffIDs for staff to login
+        li_exi_staffID_log = []
 
         for row in re_staff_id_pw:
             i = row[0]
             p = row[1]
             dict_staff_id_pw[i] = p
+            li_exi_staffID_log.append(i)
 
-            if i not in li_exi_staffID:
-                li_exi_staffID.append(i)
+        conn_sta_idpw.commit()
+        conn_sta_idpw.close()
 
         if self.val28 == '' or self.val29 == '':
             tkinter.messagebox.showinfo('Warning', 'Please fill up all the boxes')
+
+        elif  (not self.val28.isdigit()) or (not self.val29.isdigit()):
+            tkinter.messagebox.showinfo('Warning', 'The ID and password should only contain integers.')
 
         elif len(self.val28) != 4:
             tkinter.messagebox.showinfo('Warning', 'Please enter your 4-digit staff ID')
@@ -159,7 +181,7 @@ class WindowForstaffLogin:
         elif dict_staff_id_pw.get(int(self.val28) != int(self.val29)):
             tkinter.messagebox.showinfo('Warning', 'Invalid Password.')
 
-        elif int(self.val28) not in li_exi_staffID:
+        elif int(self.val28) not in li_exi_staffID_log:
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID.')
 
         else:

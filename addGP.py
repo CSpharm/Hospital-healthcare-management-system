@@ -2,11 +2,6 @@ from tkinter import *
 import tkinter.messagebox
 import sqlite3
 
-# connect to the database on register page
-conn_addGP = sqlite3.connect('Database.db')
-c_addGP = conn_addGP.cursor()
-li_ex_staffID = []
-
 class WindowForaddGP:
     def __init__(self,ad):
         self.ad = ad
@@ -72,13 +67,19 @@ class WindowForaddGP:
 
     def add_GP(self):
 
-        re_staffID = c_addGP.execute("SELECT staffID FROM staffbasic")
+        # connect to the database
+        conn_stafID = sqlite3.connect('Database.db')
+        c_stafID = conn_stafID.cursor()
 
+        re_staffID = c_stafID.execute("SELECT staffID FROM staffbasic")
+
+        li_ex_staffID = []
         for row in re_staffID:
             i = row[0]
+            li_ex_staffID.append(i)
 
-            if i not in li_ex_staffID:
-                li_ex_staffID.append(i)
+        conn_stafID.commit()
+        conn_stafID.close()
 
         # getting the user inputs
         self.val44 = self.staffidleft_entad.get()
@@ -93,6 +94,9 @@ class WindowForaddGP:
         if self.val44 == '' or self.val45 == '' or self.val46 == '' or self.val47 == '' or self.val48 == '' or self.val49 == '' or self.val50 == '' or self.val51 == '':
             tkinter.messagebox.showinfo('Warning', 'Please fill up all the boxes')
 
+        elif (not self.val44.isdigit()) or (not self.val46.isdigit()) or (not self.val47.isdigit()) or (not self.val50.isdigit()):
+            tkinter.messagebox.showinfo('Warning', 'The staff ID ,password, age, and isDr should contain only integers.')
+
         elif len(self.val44) != 4:
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. Please enter 4-digit staff ID')
 
@@ -100,7 +104,12 @@ class WindowForaddGP:
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. The ID is already in the database')
 
         else:
+            # connect to the database
+            conn_addGP = sqlite3.connect('Database.db')
+            c_addGP = conn_addGP.cursor()
+
             sql6 = "INSERT INTO staffbasic (staffID,staffName,password,age,gender,phone,isDr,Date1)VALUES(?,?,?,?,?,?,?,?)"
             c_addGP.execute(sql6, (self.val44, self.val45, self.val46, self.val47, self.val48, self.val49, self.val50, self.val51))
             conn_addGP.commit()
+            conn_addGP.close()
             tkinter.messagebox.showinfo('Confirmation', 'registration for ' + self.val45 + ' is successful.')

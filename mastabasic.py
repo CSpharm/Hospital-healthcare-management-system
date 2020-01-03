@@ -2,15 +2,6 @@ from tkinter import *
 import sqlite3
 import tkinter.messagebox
 
-# connect to the database on register page
-conn_mastabasic = sqlite3.connect('Database.db')
-
-# create a cursor
-c_mastabasic = conn_mastabasic.cursor()
-
-# creat a blank list for exist ptID
-li_exist_staID = []
-
 class WindowForMan_stabasic:
     def __init__(self, mastab, staffID):
         self.staffID = staffID
@@ -26,8 +17,12 @@ class WindowForMan_stabasic:
         self.lhmastab = Label(self.leftmastab, text="Manage staff's basic file", font=('arial 40 bold'), fg='black', bg='pink')
         self.lhmastab.place(x=0, y=0)
 
-
+        # connect to the database
+        conn_mastabasic = sqlite3.connect('Database.db')
+        # create a cursor
+        c_mastabasic = conn_mastabasic.cursor()
         re_stabasic = c_mastabasic.execute("SELECT * from staffbasic WHERE staffID = (?)",(self.staffID,))
+
         for sta in re_stabasic:
             staID_view = sta[0]
             staname_view = sta[1]
@@ -99,6 +94,8 @@ class WindowForMan_stabasic:
             self.dateview_ent.insert(END, str(stadate_view))
             self.dateview_ent.place(x=200, y=460)
 
+            conn_mastabasic.commit()
+
             # button for submitting
             self.modifysub = Button(self.rightmastab, text="Submit", width=15, height=2,bg='white', command=self.modify_sta_submit)
             self.modifysub.place(x=200, y=560)
@@ -115,10 +112,18 @@ class WindowForMan_stabasic:
 
         if self.val38 == '' or self.val39 == '' or self.val40 =='' or self.val41 == '' or self.val42 == '' or self.val43 == '' :
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
+
+        elif not (self.val39.isdigit()) or (not self.val40.isdigit()):
+            tkinter.messagebox.showinfo('Warning','Password and Age should be only integer.')
+
         else:
-            tkinter.messagebox.showinfo('Confirmation', 'modification for  '+ self.val38 + ' is successful.')
-            c_mastabasic.execute("DELETE FROM staffbasic WHERE staffID = (?)", (self.staffID,))
-            conn_mastabasic.commit()
-            sql5 = "INSERT INTO staffbasic (staffID,staffName,password,age,gender,phone,Date1)VALUES(?,?,?,?,?,?,?)"
-            c_mastabasic.execute(sql5,(self.staffID, self.val38, self.val39, self.val40, self.val41, self.val42, self.val43))
-            conn_mastabasic.commit()
+            # connect to the database
+            conn_substabasic = sqlite3.connect('Database.db')
+            # create a cursor
+            c_substabasic = conn_substabasic.cursor()
+
+            sql5 = "UPDATE staffbasic SET staffName=(?),password=(?),age=(?),gender=(?),phone=(?),Date1=(?) WHERE staffID = (?)"
+            c_substabasic.execute(sql5,(self.val38, self.val39, self.val40, self.val41, self.val42, self.val43,self.staffID))
+            conn_substabasic.commit()
+            conn_substabasic.close()
+            tkinter.messagebox.showinfo('Confirmation', 'modification for  ' + self.val38 + ' is successful.')
