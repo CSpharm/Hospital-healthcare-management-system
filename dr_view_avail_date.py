@@ -1,8 +1,10 @@
-from tkinter import *
 import sqlite3
+
+from tkinter import *
 import datetime
 
 today = datetime.date.today()
+t = str(today).split('-')
 
 class WindowForViewAvail:
 
@@ -17,13 +19,10 @@ class WindowForViewAvail:
 
         avail_List = Listbox(self.avail, yscrollcommand=scrollbar_view_avail.set, width=530, height=210)
 
-        # connect to the database
         conn_avail = sqlite3.connect('database.db')
-        # create a cursor
         c_avail = conn_avail.cursor()
 
         re_avail = c_avail.execute("SELECT adID,week,available_date FROM appointmentDate WHERE DrID = (?)", (self.staffID,))
-        t = str(today).split('-')
 
         for re in re_avail:
             x = str(re[2]).split('-')

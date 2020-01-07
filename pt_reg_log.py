@@ -1,8 +1,9 @@
+import sqlite3
+
 from tkinter import *
 import tkinter.messagebox
 import tkinter.font as tkFont
-from appointments import WindowForAppointments
-import sqlite3
+from pt_appointments import WindowForAppointments
 
 
 class WindowForptLogin:
@@ -18,6 +19,7 @@ class WindowForptLogin:
 
         # create font
         self.f1 = tkFont.Font(family='times', size='16')
+
         # headings
         self.lh = Label(self.left, text="Patient register",font = self.f1,fg='black',bg='pink')
         self.lh.place(x=0,y=0)
@@ -52,6 +54,7 @@ class WindowForptLogin:
         # allergy detail
         self.allergy = Label(self.left, text='(including food and medicine)', font=self.f1, fg='black', bg='pink')
         self.allergy.place(x=0, y=570)
+
         # RIGHT labels
         # ID for login
         self.idright = Label(self.right, text="UserID(your NHS number):", font=self.f1, fg='black', bg='lavender')
@@ -94,24 +97,10 @@ class WindowForptLogin:
         self.lo = Button(self.right, text='Patient login', width=20, height=2, bg='white', command=self.login)
         self.lo.place(x=200, y=300)
 
-    # Function for pt to register
     def register(self):
 
-        # connect to the database
-        conn_existID = sqlite3.connect('Database.db')
-        c_existID = conn_existID.cursor()
-
-        # empty the list for existing pt ID
-        li_exi_ptID = []
-
-        re_pt_id = c_existID.execute("SELECT ptID FROM ptbasic")
-
-        for row in re_pt_id:
-            i = row[0]
-            li_exi_ptID.append(i)
-
-        conn_existID.commit()
-        conn_existID.close()
+        # check exist ptID
+        self.check_exi_ptID()
 
         # getting the user inputs
         self.val1 = self.idleft_ent.get()
@@ -123,75 +112,117 @@ class WindowForptLogin:
         self.val7 = self.address_ent.get()
         self.val8 = self.allergy_ent.get()
 
-        if self.val1 == '' or self.val2 == '' or self.val3 =='' or self.val4 == '' or self.val5 == '' or self.val6 == '' or self.val7 == '' or self.val8 == '':
+        # if the inputs are blank
+        if self.val1 == '' or self.val2 == '' or self.val3 =='' or self.val4 == '' \
+                or self.val5 == '' or self.val6 == '' or self.val7 == '' or self.val8 == '':
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
 
-        elif len(self.val1) != 10 or (not self.val1.isdigit()):
+        # limit the type and length of the id input
+        elif (not self.val1.isdigit()) or len(self.val1) != 10:
             tkinter.messagebox.showinfo('Warning', 'Invalid NHS number. Please enter 10-digit NHS number')
 
-        elif int(self.val1) in li_exi_ptID:
+        # if the id is in the database
+        elif int(self.val1) in self.li_exi_ptID_01:
             tkinter.messagebox.showinfo('Warning', 'Invalid NHS number. The number is already in the database')
 
-        elif not self.val4.isdigit() :
+        # limit the type of the password and age input
+        elif (not self.val3.isdigit()) or (not self.val4.isdigit()) :
             tkinter.messagebox.showinfo('Warning', 'Invalid age. Please enter only numbers')
 
         else:
+            # add new pt registration to the database
             # connect to the database
             conn_ptreg = sqlite3.connect('Database.db')
             c_ptreg = conn_ptreg.cursor()
 
-            sql = "INSERT INTO ptbasic (ptID,ptName,password,age,gender,phone,address,allergy,isconfirmed)VALUES(?,?,?,?,?,?,?,?,?)"
+            sql = "INSERT INTO ptbasic (ptID,ptName,password,age,gender,phone,address,allergy,isconfirmed)" \
+                  "VALUES(?,?,?,?,?,?,?,?,?)"
             c_ptreg.execute(sql,(self.val1, self.val2, self.val3, self.val4, self.val5, self.val6, self.val7,self.val8,1))
+
+            # commit and close the database
             conn_ptreg.commit()
             conn_ptreg.close()
+
+            # show the successful message
             tkinter.messagebox.showinfo('Confirmation', 'registration for  '+ self.val2 + ' has been submitted.'+
                                         'Please wait. You can login once the admin confirmed your registration. ')
 
     def login(self):
-        # getting the user inputs
-        self.val10 = self.idright_ent.get()
-        self.val11 = self.pwright_ent.get()
 
-        # connect to the database on register page
+        # check the exist ptID and password
+        self.check_exi_ptIDpw()
+
+        try:
+            # getting the user inputs
+            self.val10 = self.idright_ent.get()
+            self.val11 = self.pwright_ent.get()
+
+            # check the ID is in the database and its confirmed state
+            if int(self.val10) not in self.li_exi_ptID_02:
+                tkinter.messagebox.showinfo('Warning', 'Cannot find this ID in the database.')
+
+            # check the ID-password pairs
+            elif self.dict_pt_id_pw.get(int(self.val10)) != (self.val11):
+                tkinter.messagebox.showinfo('Warning', 'Invalid ID-password pairs.')
+
+            else:
+                # show successful message
+                tkinter.messagebox.showinfo('Confirmation', 'Login successful!')
+
+                # Login page
+                # create the object
+                root_ptlog = Tk()
+                WindowForAppointments(root_ptlog ,self.val10)
+
+                # resolution of the window
+                root_ptlog .geometry('1200x720+0+0')
+                # preventing the resize feature
+                root_ptlog .resizable(False,False)
+                # end the loop
+                root_ptlog .mainloop()
+
+        except ValueError:
+            tkinter.messagebox.showinfo('Warning', 'Please enter only integers.')
+
+
+    def check_exi_ptID(self):
+
+        # check exist ptID in the DB
+        # connect to the database
+        conn_existID = sqlite3.connect('Database.db')
+        c_existID = conn_existID.cursor()
+
+        # create the list for existing pt ID
+        self.li_exi_ptID_01 = []
+
+        re_pt_id = c_existID.execute("SELECT ptID FROM ptbasic")
+
+        for row in re_pt_id:
+            i = row[0]
+            self.li_exi_ptID_01.append(i)
+
+        # commit and close the DB
+        conn_existID.commit()
+        conn_existID.close()
+
+    def check_exi_ptIDpw(self):
+
+        # check exist ptID and password in the DB
         conn_idpw = sqlite3.connect('Database.db')
         c_idpw = conn_idpw.cursor()
 
+        # create a dictionary and a list to store
+        self.dict_pt_id_pw = {}
+        self.li_exi_ptID_02 = []
+
         re_pt_id_pw = c_idpw.execute("SELECT ptID,password FROM ptbasic WHERE isconfirmed = 2")
-        dict_pt_id_pw = {}
-        li_exi_ptID = []
 
         for row in re_pt_id_pw:
             i = row[0]
             p = row[1]
-            dict_pt_id_pw[i]=p
-            li_exi_ptID.append(i)
+            self.dict_pt_id_pw[i] = p
+            self.li_exi_ptID_02.append(i)
 
+        # commit and close the DB
         conn_idpw.commit()
         conn_idpw.close()
-
-        if self.val10 == '' or self.val11 == '':
-            tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
-
-        elif len(self.val10)!= 10:
-            tkinter.messagebox.showinfo('Warning', 'Please enter your 10-digit NHS number')
-
-        elif int(self.val10) not in li_exi_ptID:
-            tkinter.messagebox.showinfo('Warning', 'Invalid NHS number.')
-
-        elif dict_pt_id_pw.get(int(self.val10)) != (self.val11):
-            tkinter.messagebox.showinfo('Warning', 'Invalid Password.')
-
-        else:
-            tkinter.messagebox.showinfo('Confirmation','Login successful!')
-            # create the object
-            root1 = Tk()
-            r1 = WindowForAppointments(root1,self.val10)
-
-            # resolution of the window
-            root1.geometry('1200x720+0+0')
-
-            # preventing the resize feature
-            root1.resizable(False,False)
-
-            # end the loop
-            root1.mainloop()

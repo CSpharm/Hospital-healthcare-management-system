@@ -2,6 +2,7 @@ from tkinter import *
 import sqlite3
 
 class WindowForPxHis:
+
     def __init__(self,pxhis,ptID):
         self.pxhis = pxhis
         self.ptID = ptID
@@ -14,9 +15,7 @@ class WindowForPxHis:
 
         pre_List.configure(yscrollcommand = scrollbary.set,width = 530, height = 360)
 
-        # connect to the database
         conn_phis = sqlite3.connect('Database.db')
-        # create a cursor
         c_phis = conn_phis.cursor()
 
         re_pre = c_phis.execute("SELECT * FROM prescription WHERE ptID = (?)",(self.ptID,))
