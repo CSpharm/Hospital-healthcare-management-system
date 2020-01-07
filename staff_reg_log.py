@@ -1,7 +1,9 @@
 from tkinter import *
+from staffhome import WindowForstaffHome
 import tkinter.messagebox
 import sqlite3
-from staffhome import WindowForstaffHome
+import tkinter.font as tkFont
+
 
 # create a window for stafflogin
 class WindowForstaffLogin:
@@ -9,145 +11,41 @@ class WindowForstaffLogin:
         self.staffreg = staffreg
 
         # create a frame
-        self.left3 = Frame(staffreg, width=630, height = 720, bg='pink')
-        self.left3.pack(side=LEFT)
         self.right3 = Frame(staffreg, width= 570, height = 720, bg = 'lavender')
-        self.right3.pack(side=RIGHT)
+        self.right3.pack(side=LEFT)
+
+        # create font
+        self.f1 = tkFont.Font(family='times', size='16')
 
         # headings
-        self.lh3 = Label(self.left3, text="Staff register", font=('arial 40 bold'), fg='black', bg='pink')
-        self.lh3.place(x=0, y=0)
-        self.rh3 = Label(self.right3, text="Staff login", font=('arial 40 bold'), fg='black', bg='lavender')
+        self.rh3 = Label(self.right3, text="Staff login", font=self.f1, fg='black', bg='lavender')
         self.rh3.place(x=0, y=0)
-
-        # LEFT labels
-        # staff id
-        self.staffidleft3 = Label(self.left3, text="Staff's ID (4 digit)", font=('arial 20 bold'), fg='black', bg='pink')
-        self.staffidleft3.place(x=0, y=70)
-        # staff's name
-        self.nameleft3 = Label(self.left3, text="Staff's Name", font=('arial 20 bold'), fg='black', bg='pink')
-        self.nameleft3.place(x=0, y=120)
-        # password
-        self.pwleft3 = Label(self.left3, text="password(only numbers)", font=('arial 20 bold'), fg='black', bg='pink')
-        self.pwleft3.place(x=0, y=180)
-        # age
-        self.age3 = Label(self.left3, text='Age', font=('arial 20 bold'), fg='black', bg='pink')
-        self.age3.place(x=0, y=240)
-        # gender
-        self.gender3 = Label(self.left3, text='Gender', font=('arial 20 bold'), fg='black', bg='pink')
-        self.gender3.place(x=0, y=300)
-        # phone
-        self.phone3 = Label(self.left3, text='Phone', font=('arial 20 bold'), fg='black', bg='pink')
-        self.phone3.place(x=0, y=360)
-        # is a Doctor?
-        self.isdr3 = Label(self.left3, text='Are you a doctor? ', font=('arial 20 bold'), fg='black', bg='pink')
-        self.isdr3.place(x=0, y=410)
-        self.isdrdet3 = Label(self.left3, text=' (Y:1, N:0) ', font=('arial 17 bold'), fg='black',bg='pink')
-        self.isdrdet3.place(x=20, y=435)
-        self.drdate3 = Label(self.left3, text='Your available date for appointments:DD/MM', font=('arial 20 bold'), fg='black', bg='pink')
-        self.drdate3.place(x=0, y=470)
-        self.drdatedet3 = Label(self.left3, text='(If you are not a doctor please fill 0)', font=('arial 16 bold'),fg='black', bg='pink')
-        self.drdatedet3.place(x=0, y=495)
 
         # RIGHT labels
         # ID for login
-        self.idright3 = Label(self.right3, text="staffID:", font=('arial 20 bold'), fg='black',bg='lavender')
+        self.idright3 = Label(self.right3, text="staffID:", font=self.f1, fg='black',bg='lavender')
         self.idright3.place(x=0, y=100)
         # password for login
-        self.pwright3 = Label(self.right3, text="Password:", font=('arial 20 bold'), fg='black', bg='lavender')
+        self.pwright3 = Label(self.right3, text="Password:", font=self.f1, fg='black', bg='lavender')
         self.pwright3.place(x=0, y=200)
-
-        # entry for left labels
-        self.staffidleft_ent3 = Entry(self.left3, width=15)
-        self.staffidleft_ent3.place(x=250, y=70)
-        self.nameleft_ent3 = Entry(self.left3, width=15)
-        self.nameleft_ent3.place(x=250, y=120)
-        self.pwleft_ent3 = Entry(self.left3, width=15)
-        self.pwleft_ent3.place(x=250, y=180)
-        self.age_ent3 = Entry(self.left3, width=15)
-        self.age_ent3.place(x=250, y=240)
-        self.gender_ent3 = Entry(self.left3, width=15)
-        self.gender_ent3.place(x=250, y=300)
-        self.phone_ent3 = Entry(self.left3, width=15)
-        self.phone_ent3.place(x=250, y=360)
-        self.isdr_ent3 = Entry(self.left3, width=15)
-        self.isdr_ent3.place(x=250, y=420)
-        self.date_ent3 = Entry(self.left3, width=15)
-        self.date_ent3.place(x=250, y=520)
 
         # entry for right labels
         self.idright_ent3 = Entry(self.right3, width=20)
-        self.idright_ent3.insert(END, "1002")
+        self.idright_ent3.insert(END, "1015")
         self.idright_ent3.place(x=200, y=140)
         self.pwright_ent3 = Entry(self.right3, width=20)
-        self.pwright_ent3.insert(END, "2")
+        self.pwright_ent3.insert(END, "15")
         self.pwright_ent3.place(x=200, y=200)
 
-        # Button to register
-        self.staffre = Button(self.left3, text='staff register', width=15, height=2, bg='white', command=self.staffregister)
-        self.staffre.place(x=250, y=580)
         # Button to login
         self.stafflo = Button(self.right3, text='staff login', width=15, height=2, bg='white', command=self.stafflogin)
         self.stafflo.place(x=200, y=300)
 
-    def staffregister(self):
-
-        # getting the user inputs
-        self.val20 = self.staffidleft_ent3.get()
-        self.val21 = self.nameleft_ent3.get()
-        self.val22 = self.pwleft_ent3.get()
-        self.val23 = self.age_ent3.get()
-        self.val24 = self.gender_ent3.get()
-        self.val25 = self.phone_ent3.get()
-        self.val26 = self.isdr_ent3.get()
-        self.val27 = self.date_ent3.get()
-
-        # connect to the database
-        conn_ID = sqlite3.connect('Database.db')
-        c_ID = conn_ID.cursor()
-        re_staff_id = c_ID.execute("SELECT staffID FROM staffbasic")
-
-        # create a list to store exist staffIDs
-        li_exi_staffID_reg = []
-
-        for row in re_staff_id:
-            i = row[0]
-            li_exi_staffID_reg.append(i)
-
-        conn_ID.commit()
-        conn_ID.close()
-
-        if self.val20 == '' or self.val21 == '' or self.val22 == '' or self.val23 == '' or self.val24 == '' or self.val25 == '' or self.val26 == '' or self.val27 == '':
-            tkinter.messagebox.showinfo('Warning', 'Please fill up all the boxes')
-
-        elif len(self.val20) != 4 or (not self.val20.isdigit()):
-            tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. Please enter 4-digit staff ID')
-
-        elif int(self.val20) in li_exi_staffID_reg:
-            tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. The ID is already in the database')
-
-        elif (not self.val22.isdigit()) or (not self.val23.isdigit())or (not self.val26.isdigit()):
-            tkinter.messagebox.showinfo('Warning', 'Password, Age and isDr must be only integers.')
-
-        elif (self.val26 !=0) or (self.val26 !=1):
-            tkinter.messagebox.showinfo('Warning', 'isDr must be 0 or 1.')
-
-        else:
-            # connect to database
-            conn_sta_reg = sqlite3.connect('Database.db')
-            c_sta_reg = conn_sta_reg.cursor()
-
-            sql3="INSERT INTO staffbasic(staffID,staffName,password,age,gender,phone,isDr,Date1)VALUES(?,?,?,?,?,?,?,?)"
-            c_sta_reg.execute(sql3,(self.val20, self.val21, self.val22, self.val23, self.val24, self.val25, self.val26, self.val27))
-            conn_sta_reg.commit()
-            conn_sta_reg.close()
-            tkinter.messagebox.showinfo('Confirmation','registration for ' + self.val21 + ' is successful.')
-
     def stafflogin(self):
 
         # getting the user inputs
-        self.val28 = self.idright_ent3.get()
-        self.val29 = self.pwright_ent3.get()
+        self.val26 = self.idright_ent3.get()
+        self.val27 = self.pwright_ent3.get()
 
         # connect to database
         conn_sta_idpw = sqlite3.connect('Database.db')
@@ -169,26 +67,26 @@ class WindowForstaffLogin:
         conn_sta_idpw.commit()
         conn_sta_idpw.close()
 
-        if self.val28 == '' or self.val29 == '':
+        if self.val26 == '' or self.val27 == '':
             tkinter.messagebox.showinfo('Warning', 'Please fill up all the boxes')
 
-        elif  (not self.val28.isdigit()) or (not self.val29.isdigit()):
+        elif  (not self.val26.isdigit()) or (not self.val27.isdigit()):
             tkinter.messagebox.showinfo('Warning', 'The ID and password should only contain integers.')
 
-        elif len(self.val28) != 4:
+        elif len(self.val26) != 4:
             tkinter.messagebox.showinfo('Warning', 'Please enter your 4-digit staff ID')
 
-        elif dict_staff_id_pw.get(int(self.val28) != int(self.val29)):
+        elif dict_staff_id_pw.get(int(self.val26) != int(self.val27)):
             tkinter.messagebox.showinfo('Warning', 'Invalid Password.')
 
-        elif int(self.val28) not in li_exi_staffID_log:
+        elif int(self.val26) not in li_exi_staffID_log:
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID.')
 
         else:
             tkinter.messagebox.showinfo('Confirmation', 'Login successful!')
             # create the object
             root4 = Tk()
-            r4 = WindowForstaffHome(root4, self.val28)
+            r4 = WindowForstaffHome(root4, self.val26)
 
             # resolution of the window
             root4.geometry('1200x720+0+0')

@@ -1,5 +1,9 @@
+from tkinter import *
 import tkinter.messagebox
-from appointments import *
+import tkinter.font as tkFont
+from appointments import WindowForAppointments
+import sqlite3
+
 
 class WindowForptLogin:
 
@@ -12,51 +16,53 @@ class WindowForptLogin:
         self.right = Frame(ptreg, width= 550, height = 720, bg = 'lavender')
         self.right.pack(side=RIGHT)
 
+        # create font
+        self.f1 = tkFont.Font(family='times', size='16')
         # headings
-        self.lh = Label(self.left, text="Patient register",font = ('arial 40 bold'),fg='black',bg='pink')
+        self.lh = Label(self.left, text="Patient register",font = self.f1,fg='black',bg='pink')
         self.lh.place(x=0,y=0)
-        self.rh = Label(self.right, text="Patient login", font=('arial 40 bold'), fg='black', bg='lavender')
+        self.rh = Label(self.right, text="Patient login", font= self.f1, fg='black', bg='lavender')
         self.rh.place(x=0,y=0)
 
         # LEFT labels
         # NHS number
-        self.idleft = Label(self.left, text="UserID(your NHS number)", font=('arial 20 bold'), fg='black', bg='pink')
+        self.idleft = Label(self.left, text="UserID(your NHS number)", font=self.f1, fg='black', bg='pink')
         self.idleft.place(x=0, y=70)
         # patients' name
-        self.nameleft = Label(self.left, text="Patient's Name", font=('arial 20 bold'), fg='black', bg='pink')
+        self.nameleft = Label(self.left, text="Patient's Name", font=self.f1, fg='black', bg='pink')
         self.nameleft.place(x=0,y=140)
         # password
-        self.pwleft = Label(self.left, text="password(only numbers)", font=('arial 20 bold'), fg='black', bg='pink')
+        self.pwleft = Label(self.left, text="password(only numbers)", font=self.f1, fg='black', bg='pink')
         self.pwleft.place(x=0, y=210)
         # age
-        self.age = Label(self.left, text= 'Age', font=('arial 20 bold'), fg='black', bg='pink')
+        self.age = Label(self.left, text= 'Age', font=self.f1, fg='black', bg='pink')
         self.age.place(x=0,y=280)
         # gender
-        self.gender = Label(self.left, text='Gender', font=('arial 20 bold'), fg='black', bg='pink')
+        self.gender = Label(self.left, text='Gender', font=self.f1, fg='black', bg='pink')
         self.gender.place(x=0, y=350)
         # phone
-        self.phone = Label(self.left, text='Phone', font=('arial 20 bold'), fg='black', bg='pink')
+        self.phone = Label(self.left, text='Phone', font=self.f1, fg='black', bg='pink')
         self.phone.place(x=0, y=420)
         # address
-        self.address = Label(self.left, text='Address', font=('arial 20 bold'), fg='black', bg='pink')
+        self.address = Label(self.left, text='Address', font=self.f1, fg='black', bg='pink')
         self.address.place(x=0, y=490)
         # allergy
-        self.allergy = Label(self.left, text='Allergy', font=('arial 20 bold'), fg='black', bg='pink')
+        self.allergy = Label(self.left, text='Allergy', font=self.f1, fg='black', bg='pink')
         self.allergy.place(x=0, y=540)
         # allergy detail
-        self.allergy = Label(self.left, text='(including food and medicine)', font=('arial 17 bold'), fg='black', bg='pink')
+        self.allergy = Label(self.left, text='(including food and medicine)', font=self.f1, fg='black', bg='pink')
         self.allergy.place(x=0, y=570)
         # RIGHT labels
         # ID for login
-        self.idright = Label(self.right, text="UserID(your NHS number):", font=('arial 20 bold'), fg='black', bg='lavender')
+        self.idright = Label(self.right, text="UserID(your NHS number):", font=self.f1, fg='black', bg='lavender')
         self.idright.place(x=0, y=100)
         # password for login
-        self.pwright = Label(self.right, text="Password:",font=('arial 20 bold'), fg='black', bg='lavender')
+        self.pwright = Label(self.right, text="Password:",font=self.f1, fg='black', bg='lavender')
         self.pwright.place(x=0, y=200)
 
         # entry for left labels
         self.idleft_ent = Entry(self.left, width=15)
-        self.idleft_ent.place(x=250, y=100)
+        self.idleft_ent.place(x=250, y=80)
         self.nameleft_ent = Entry(self.left, width=15)
         self.nameleft_ent.place(x=250, y=150)
         self.pwleft_ent = Entry(self.left, width=15)
@@ -78,7 +84,7 @@ class WindowForptLogin:
         self.idright_ent.place(x=200, y=140)
 
         self.pwright_ent = Entry(self.right, width=20)
-        self.pwright_ent.insert(0, "12345")
+        self.pwright_ent.insert(0, "1")
         self.pwright_ent.place(x=200, y=200)
 
         # Button to register
@@ -134,11 +140,12 @@ class WindowForptLogin:
             conn_ptreg = sqlite3.connect('Database.db')
             c_ptreg = conn_ptreg.cursor()
 
-            sql = "INSERT INTO ptbasic (ptID,ptName,password,age,gender,phone,address,allergy)VALUES(?,?,?,?,?,?,?,?)"
-            c_ptreg.execute(sql,(self.val1, self.val2, self.val3, self.val4, self.val5, self.val6, self.val7,self.val8))
+            sql = "INSERT INTO ptbasic (ptID,ptName,password,age,gender,phone,address,allergy,isconfirmed)VALUES(?,?,?,?,?,?,?,?,?)"
+            c_ptreg.execute(sql,(self.val1, self.val2, self.val3, self.val4, self.val5, self.val6, self.val7,self.val8,1))
             conn_ptreg.commit()
             conn_ptreg.close()
-            tkinter.messagebox.showinfo('Confirmation', 'registration for '+ self.val2 + ' has been submitted. Now you can login')
+            tkinter.messagebox.showinfo('Confirmation', 'registration for  '+ self.val2 + ' has been submitted.'+
+                                        'Please wait. You can login once the admin confirmed your registration. ')
 
     def login(self):
         # getting the user inputs
@@ -149,7 +156,7 @@ class WindowForptLogin:
         conn_idpw = sqlite3.connect('Database.db')
         c_idpw = conn_idpw.cursor()
 
-        re_pt_id_pw = c_idpw.execute("SELECT ptID,password FROM ptbasic")
+        re_pt_id_pw = c_idpw.execute("SELECT ptID,password FROM ptbasic WHERE isconfirmed = 2")
         dict_pt_id_pw = {}
         li_exi_ptID = []
 
@@ -168,11 +175,11 @@ class WindowForptLogin:
         elif len(self.val10)!= 10:
             tkinter.messagebox.showinfo('Warning', 'Please enter your 10-digit NHS number')
 
-        elif dict_pt_id_pw.get(int(self.val10)) != (self.val11):
-            tkinter.messagebox.showinfo('Warning', 'Invalid Password.')
-
         elif int(self.val10) not in li_exi_ptID:
             tkinter.messagebox.showinfo('Warning', 'Invalid NHS number.')
+
+        elif dict_pt_id_pw.get(int(self.val10)) != (self.val11):
+            tkinter.messagebox.showinfo('Warning', 'Invalid Password.')
 
         else:
             tkinter.messagebox.showinfo('Confirmation','Login successful!')

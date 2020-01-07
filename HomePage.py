@@ -2,6 +2,7 @@ from tkinter import *
 from pt_reg_log import WindowForptLogin
 from staff_reg_log import WindowForstaffLogin
 
+
 # create a window for home
 class WindowForHome:
     def __init__(self,h):
@@ -14,7 +15,7 @@ class WindowForHome:
         self.righth.pack(side=RIGHT)
 
         # headings
-        self.lhh = Label(self.lefth, text="Welcome to UCLH.",font = ('arial 40 bold'),fg='black',bg='pink')
+        self.lhh = Label(self.lefth, text="Welcome to UCLH.",font = ('arial 30 bold'),fg='black',bg='pink')
         self.lhh.place(x=0,y=0)
 
         # identity for pt / staff
@@ -22,14 +23,14 @@ class WindowForHome:
         self.bu_pt = Button(self.lefth, text='I am a patient', width=20, height=2, bg='white', command=self.pt)
         self.bu_pt.place(x=200, y=300)
         # Button for staff
-        self.bu_dr = Button(self.righth, text='I am a staff', width=20, height=2, bg='white', command=self.dr)
+        self.bu_dr = Button(self.righth, text='I am a staff', width=20, height=2, bg='white', command=self.staff)
         self.bu_dr.place(x=200, y=300)
 
     def pt(self):
         # link to the pt_reg_log
         # create the object
         root2 = Tk()
-        r2 = WindowForptLogin(root2)
+        WindowForptLogin(root2)
 
         # resolution of the window
         root2.geometry('1200x720+0+0')
@@ -40,14 +41,14 @@ class WindowForHome:
         # end the loop
         root2.mainloop()
 
-    def dr(self):
+    def staff(self):
         # link to the pt_reg_log
         # create the object
         root3 = Tk()
         r3 = WindowForstaffLogin(root3)
 
         # resolution of the window
-        root3.geometry('1200x720+0+0')
+        root3.geometry('570x720+0+0')
 
         # preventing the resize feature
         root3.resizable(False, False)

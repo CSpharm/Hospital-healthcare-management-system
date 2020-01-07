@@ -1,10 +1,18 @@
 import sqlite3
 from tkinter import *
+import tkinter.font as tkFont
+
 
 class WindowFordrseeappointments:
+
     def __init__(self,drseeapp,staffID):
+
         self.drseeapp = drseeapp
         self.staffID = staffID
+
+        # create font
+        self.f1 = tkFont.Font(family='times', size='16')
+
         self.appointmentList()
 
     def appointmentList(self):
@@ -12,8 +20,7 @@ class WindowFordrseeappointments:
         scrollbar3 = Scrollbar(self.drseeapp)
         scrollbar3.pack(side=RIGHT, fill=Y)
 
-        # appointment的清單，此Listbox的長和寬會和 Frame 一樣大小
-        appList = Listbox(self.drseeapp, yscrollcommand=scrollbar3.set, width=650, height=150)
+        appList = Listbox(self.drseeapp, yscrollcommand=scrollbar3.set, width=650, height=150,font = self.f1)
 
         # connect to the database for appointments
         conn_drsee = sqlite3.connect('Database.db')

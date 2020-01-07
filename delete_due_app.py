@@ -24,7 +24,7 @@ class WindowFordeletedueapp:
 
         # Button to see the due appointments
         self.bseedue = Button(self.leftdel, text='See your due appointments', width=20, height=2, bg='white',command=self.see_due)
-        self.bseedue.place(x=10, y=50)
+        self.bseedue.place(x=285, y=50)
 
         # label for the entry
         self.delappno = Label(self.leftdel, text="Enter the appointment no.", font=self.F2, fg='black', bg='pink')

@@ -1,7 +1,8 @@
-import tkinter.messagebox
+from tkinter import *
+import tkinter.messagebox, datetime
 import tkinter.font as tkFont
-from see_appointments import *
-import datetime
+import sqlite3
+from pt_see_appointments import WindowtoseeAppointments
 
 today = datetime.date.today()
 t = str(today).split('-')
@@ -27,14 +28,12 @@ class WindowForAppointments:
         self.downLeft.pack(side=BOTTOM)
 
         # create font
-        self.f1 = tkFont.Font(family='times', size='16', weight='bold')
-        self.f2 = tkFont.Font(family='times', size='30', weight='bold')
-        self.f3 = tkFont.Font(family='times', size='24', weight='bold')
+        self.f1 = tkFont.Font(family='times', size='16')
         # Left heading
-        self.lh2 = Label(self.left2, text="Add Appointments",font =self.f2,fg='black',bg='pink')
+        self.lh2 = Label(self.left2, text="Add Appointments",font =self.f1,fg='black',bg='pink')
         self.lh2.place(x=0,y=0)
         # Right heading
-        self.rh2 = Label(self.right2, text="Cancel Appointments", font=self.f2, fg='black', bg='light green')
+        self.rh2 = Label(self.right2, text="Cancel Appointments", font=self.f1, fg='black', bg='light green')
         self.rh2.place(x=0, y=0)
 
         # Left labels
@@ -58,25 +57,27 @@ class WindowForAppointments:
         conn_ptlo.close()
 
         # Fixed Left Labels
-        # Dr's name
+        # Dr's ID
         self.dridup = Label(self.left2, text="Dr's ID:  ", font=self.f1, fg='black', bg='pink')
         self.dridup.place(x=0, y=150)
         # Appointment Date
-        self.dateup = Label(self.left2, text="Appointment Date:  ", font=self.f1, fg='black', bg='pink')
+        self.dateup = Label(self.left2, text="Appointment Date no.  ", font=self.f1, fg='black', bg='pink')
         self.dateup.place(x=0, y=200)
         self.drnameleftd = Label(self.left2, text="Doctors", font=self.f1, fg='black', bg='pink')
         self.drnameleftd.place(x=0, y=310)
         self.dated = Label(self.left2, text="Date", font=self.f1, fg='black', bg='pink')
-        self.dated.place(x=120, y=310)
+        self.dated.place(x=110, y=310)
         self.dridd = Label(self.left2, text="Dr. ID", font=self.f1, fg='black', bg='pink')
-        self.dridd.place(x=200, y=310)
-
+        self.dridd.place(x=220, y=310)
+        self.laDno = Label(self.left2, text="Appointment Date no.", font=self.f1, fg='black', bg='pink')
+        self.laDno.place(x=280, y=310)
 
         # Entry for left labels
-        self.drid_ent = Entry(self.left2, width=8)
+        self.drid_ent = Entry(self.left2, width=6)
         self.drid_ent.place(x=155, y=150)
-        self.apptime_ent = Entry(self.left2, width=15)
-        self.apptime_ent.place(x=155, y=200)
+        self.aDno_ent = Entry(self.left2, width=5)
+        self.aDno_ent.place(x=155, y=200)
+
         # Button to add an appointment
         self.submit = Button(self.left2, text='Add appointment', width=15, height=2, bg='white',command=self.add_appointment)
         self.submit.place(x=350, y=250)
@@ -85,33 +86,34 @@ class WindowForAppointments:
         scrollbar = Scrollbar(self.downLeft)
         scrollbar.pack(side=RIGHT, fill=Y)
         # set a Listbox to fit the downLeft Frame
-        drnameList = Listbox(self.downLeft, yscrollcommand=scrollbar.set, width=550, height=350,font=self.f3)
+        drnameList = Listbox(self.downLeft, yscrollcommand=scrollbar.set, width=550, height=350,font=self.f1)
 
         # connect to the database for appointments
         conn_drname = sqlite3.connect('Database.db')
         # create a cursor
         c_drname = conn_drname.cursor()
         # Print the Dr. and their dates
-        dr_namedate = c_drname.execute("SELECT staffName,Date1,staffID FROM staffbasic WHERE isDr = 1 ")
+        dr_namedate = c_drname.execute("SELECT DrName,DrID,available_date,adID FROM appointmentdate ")
 
-        # create a dictionary to put the dr and their available date
-        dict_drdate_avail = {}
+        li_adID = []
         for row in dr_namedate:
-            n = row[0]
-            d1 = row[1]
-            id = row[2]
-            dict_drdate_avail[id] = d1
+            name = row[0]
+            id = row[1]
+            d1 = row[2]
+            appointmentDateID = row[3]
+            li_adID.append(row[3])
             appD = str(d1).split('-')
 
             if (appD[0] > t[0]) or (appD[0] == t[0] and appD[1] > t[1]) or (appD[0] == t[0] and appD[1] == t[1] and (appD[2] > t[2])):
-                drnameList.insert(END, str(n) + '                ' + str(d1) +'                ' + str(id))
+                drnameList.insert(END, str(name) + '                ' + str(d1) +'                ' + str(id) +
+                                  '          '     + str(appointmentDateID))
 
         conn_drname.commit()
         conn_drname.close()
 
         drnameList.pack(side=LEFT, fill = BOTH)
         scrollbar.config(command=drnameList.yview)
-        self.dict_drdate_avail =dict_drdate_avail
+        self.li_adID = li_adID
 
         # right labels
         self.idright = Label(self.right2, text="NHS number: " + str(self.userID), font=self.f1, fg='black', bg='lightgreen')
@@ -143,47 +145,92 @@ class WindowForAppointments:
         rootsee.geometry('400x200+0+0')
         rootsee.mainloop()
 
+
     # Function to call when the submit button is clicked
     def add_appointment(self):
 
-        self.val12 = self.drid_ent.get()
-        self.val13 = self.apptime_ent.get()
-        self.val15 = datetime.datetime.now()
+        try :
+            self.val12 = int(self.drid_ent.get())
+            self.val13 = int(self.aDno_ent.get())
+            self.val14 = datetime.datetime.now()
 
-        # connect to the database for appointments
-        conn_addapp = sqlite3.connect('Database.db')
-        # create a cursor
-        c_addapp = conn_addapp.cursor()
+            self.prestuff_check_valid()
 
-        re_isDup = c_addapp.execute("SELECT appointmentTime,isApproved FROM appointments WHERE ptID = (?) ",(self.userID,))
-        dict_dup ={}
-        for dup in re_isDup:
-            if int(dup[1]) == 1 or int(dup[1]) == 2:
-                dup_time = dup[0]
-                dict_dup[self.userID] = dup_time
+            if self.val13 in self.li_dup_adID:
+                tkinter.messagebox.showinfo('Warning', 'Duplicate appointment on the same day.')
 
-        if not self.val12.isdigit():
+            elif self.val13 not in self.li_adID:
+                tkinter.messagebox.showinfo('Warning', 'Invalid appointment Date no.')
+
+            elif self.dict_IDpairs.get(self.val12)!= self.val13:
+                tkinter.messagebox.showinfo('Warning', 'Invalid pairs.')
+
+            else:
+                conn_addapp = sqlite3.connect('Database.db')
+                c_addapp = conn_addapp.cursor()
+
+                sql2 = "INSERT INTO 'appointments' (ptID, ptName, appointmentTime, isApproved,DrName,DrID," \
+                       "systemTime,adID) VALUES(?,?,?,?,?,?,?,?)"
+                c_addapp.execute(sql2,(self.userID, self.ptloginname, self.val15, 1, self.val16, self.val12, self.val14,self.val13))
+                conn_addapp.commit()
+                conn_addapp.close()
+                tkinter.messagebox.showinfo('Confirmation', 'Appointment for '+ self.ptloginname + ' has been submitted.')
+                self.see_appointment()
+
+        except ValueError:
             tkinter.messagebox.showinfo('Warning', 'Please fill up an integer.')
 
-        elif dict_dup.get(int(self.userID)) == self.val13:
-            tkinter.messagebox.showinfo('Warning', 'Duplicate appointment on the same day.')
 
-        elif self.val12 == '' or self.val13 == '' :
-            tkinter.messagebox.showinfo('Warning','Please fill the boxes')
+    def prestuff_check_valid(self):
 
-        else:
-            # Find the Drname by id
-            re_dr_ID = c_addapp.execute("SELECT staffname FROM staffbasic WHERE staffID = (?)",(self.val12,))
-            for ro in re_dr_ID:
-                self.val16 = ro[0]
+        # search the appointmentDate using self.val13
+        conn_find_date = sqlite3.connect('Database.db')
+        c_find_date = conn_find_date.cursor()
 
-            sql2 = "INSERT INTO 'appointments' (ptID, ptName, appointmentTime, isApproved,DrName,DrID,systemTime) VALUES(?,?,?,?,?,?,?)"
-            c_addapp.execute(sql2,(self.userID, self.ptloginname, self.val13, 1, self.val16, self.val12, self.val15))
-            conn_addapp.commit()
-            conn_addapp.close()
-            tkinter.messagebox.showinfo('Confirmation', 'Appointment for '+ self.ptloginname + ' has been submitted.')
-            self.see_appointment()
+        re_find_date = c_find_date.execute("SELECT available_date FROM appointmentDate WHERE adID = (?)",(self.val13,))
+        for row in re_find_date:
+            self.val15 = row[0]
 
+        conn_find_date.commit()
+        conn_find_date.close()
+
+        # Find the Drname by id
+        conn_find_name = sqlite3.connect('Database.db')
+        c_find_name = conn_find_name.cursor()
+
+        re_dr_ID = c_find_name.execute("SELECT staffname FROM staffbasic WHERE staffID = (?)", (self.val12,))
+        for ro in re_dr_ID:
+            self.val16 = ro[0]
+
+        conn_find_name.commit()
+        conn_find_name.close()
+
+        # calculate the duplicate appointment
+        conn_dup = sqlite3.connect('Database.db')
+        c_dup = conn_dup.cursor()
+
+        re_isDup = c_dup.execute("SELECT adID FROM appointments WHERE ptID = (?) ", (self.userID,))
+        li_dup_adID = []
+        for re in re_isDup:
+            li_dup_adID.append(re[0])
+
+        conn_dup.commit()
+        conn_dup.close()
+        self.li_dup_adID = li_dup_adID
+
+        # store the valid drID and their adID in to a dictionary
+        conn_IDpairs = sqlite3.connect('Database.db')
+        c_IDpairs = conn_IDpairs.cursor()
+
+        re_IDpairs = c_IDpairs.execute("SELECT DrID,adID FROM appointmentDate ")
+        dict_IDpairs = {}
+
+        for re in re_IDpairs:
+            dict_IDpairs[int(re[0])] = int(re[1])
+
+        conn_IDpairs.commit()
+        conn_IDpairs.close()
+        self.dict_IDpairs = dict_IDpairs
 
     # Function to cancel an appointment
     def cancel_appointment(self):

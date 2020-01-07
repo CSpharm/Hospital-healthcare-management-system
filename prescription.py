@@ -3,6 +3,7 @@ import sqlite3
 import tkinter.messagebox
 import tkinter.font as tkFont
 import datetime
+from dr_see_pxhis import WindowForPxHis
 
 today = datetime.date.today()
 t = str(today).split('-')
@@ -26,21 +27,21 @@ class WindowForpres:
         self.downLeftp.pack(side=BOTTOM)
 
         # create font
-        self.f1 = tkFont.Font(family='times', size='16', weight='bold')
-        self.f2 = tkFont.Font(family='times', size='30', weight='bold')
-        self.f3 = tkFont.Font(family='times', size='24', weight='bold')
+        self.f1 = tkFont.Font(family='times', size='16')
 
         # Left heading
-        self.lhp = Label(self.leftp, text="Patient's basic file",font =self.f2,fg='black',bg='pink')
+        self.lhp = Label(self.leftp, text="Patient's basic file",font =self.f1,fg='black',bg='pink')
         self.lhp.place(x=0,y=0)
-        self.ldhp = Label(self.leftp, text="Prescription history", font=self.f2, fg='blue', bg='pink')
+        self.ldhp = Label(self.leftp, text="Prescription history", font=self.f1, fg='blue', bg='pink')
         self.ldhp.place(x=0, y=300)
-        self.ldfp = Label(self.leftp, text="No.     Date              Medicine                       Day     "
-                                           + "           Administration             Dr.name",
-                          font=self.f2, fg='blue', bg='pink')
-        self.ldfp.place(x=0, y=335)
+        self.ldetail1 = Label(self.leftp, text="Column order:",font=self.f1, fg='blue', bg='pink')
+        self.ldetail1.place(x=0, y=335)
+        self.ldetail2 = Label(self.leftp, text=" Prescription no., Date, Medicine name, Dosage, Day, "
+                              "How to use, Dr's name.",font=self.f1, fg='blue', bg='pink')
+        self.ldetail2.place(x=0, y=360)
+
         # Right heading
-        self.rhp = Label(self.rightp, text="Prescription", font=self.f2, fg='black', bg='light green')
+        self.rhp = Label(self.rightp, text="Prescription", font=self.f1, fg='black', bg='light green')
         self.rhp.place(x=0, y=0)
 
         # Left labels
@@ -79,7 +80,7 @@ class WindowForpres:
         conn_ptb.close()
 
         # Button to see the px
-        self.bseepx = Button(self.leftp, text="See the prescription history", font=self.f1, fg='black', bg='pink', command=self.seepx)
+        self.bseepx = Button(self.leftp, text="See the prescription history", font=self.f1, fg='black', bg='pink', command=self.pxhistory)
         self.bseepx.place(x=0, y=270)
         # connect to the database
         conn_drname = sqlite3.connect('Database.db')
@@ -154,7 +155,7 @@ class WindowForpres:
                 self.sub.place(x=280, y=280)
 
                 # Label to delete a prescription
-                self.ldp = Label(self.rightp, text="Delete today's prescription", font=self.f2, fg='black', bg='lightgreen')
+                self.ldp = Label(self.rightp, text="Delete today's prescription", font=self.f1, fg='black', bg='lightgreen')
                 self.ldp.place(x=0, y=380)
                 self.le = Label(self.rightp, text="Enter the prescription no.", font=self.f1, fg='black', bg='lightgreen')
                 self.le.place(x=0, y=430)
@@ -174,37 +175,16 @@ class WindowForpres:
 
 
 
-    def seepx(self):
+    def pxhistory(self):
 
-        # set scrollbar
-        scrollbar = Scrollbar(self.downLeftp)
-        scrollbar.pack(side=RIGHT, fill=Y)
-        # set a list to fit the frame
-        pre_List = Listbox(self.downLeftp, yscrollcommand=scrollbar.set, width=550, height=360,font=self.f3)
+        root_drPxHis = Tk()
+        rdrPxHis = WindowForPxHis(root_drPxHis,self.ptID)
 
-        # connect to the database
-        conn_phis = sqlite3.connect('Database.db')
-        # create a cursor
-        c_phis = conn_phis.cursor()
+        # resolution of the window
+        root_drPxHis.geometry('530x360+0+0')
+        # end the loop
+        root_drPxHis.mainloop()
 
-        re_pre = c_phis.execute("SELECT * FROM prescription WHERE ptID = (?)",(self.ptID,))
-        for r in re_pre:
-            orderno = r[4]
-            appdate = r[3]
-            med1 = r[5]
-            day1 = r[6]
-            dos1 = r[7]
-            adm1 = r[8]
-            Drname = r[2]
-            pre_List.insert(END, str(orderno)+ '    ' + str(appdate)+ '         '+str(med1) + '   '+ str(dos1) +'     '
-                            +str(day1) +'                 '+ str(adm1) +'               '+ str(Drname))
-
-        conn_phis.commit()
-        conn_phis.close()
-
-        pre_List.pack(side=LEFT, fill = 'x')
-        scrollbar.config(command=pre_List.yview)
-        scrollbar.config(command=pre_List.yview)
 
     def addpx(self):
 

@@ -1,6 +1,7 @@
 from tkinter import *
-import sqlite3
 import tkinter.messagebox
+import sqlite3
+import tkinter.font as tkFont
 
 class WindowForMan_stabasic:
     def __init__(self, mastab, staffID):
@@ -13,8 +14,11 @@ class WindowForMan_stabasic:
         self.rightmastab = Frame(mastab, width=650, height=720, bg='light yellow')
         self.rightmastab.pack(side=RIGHT)
 
+        # create font
+        self.f1 = tkFont.Font(family='times', size='16')
+
         # heading
-        self.lhmastab = Label(self.leftmastab, text="Manage staff's basic file", font=('arial 40 bold'), fg='black', bg='pink')
+        self.lhmastab = Label(self.leftmastab, text="Manage staff's basic file", font=self.f1, fg='black', bg='pink')
         self.lhmastab.place(x=0, y=0)
 
         # connect to the database
@@ -42,31 +46,31 @@ class WindowForMan_stabasic:
 
             # labels
             # ID
-            self.staID = Label(self.rightmastab, text="Your staff ID: "+ str(staID_view), font=('arial 20 bold'), fg='black', bg='light yellow')
+            self.staID = Label(self.rightmastab, text="Your staff ID: "+ str(staID_view), font=self.f1, fg='black', bg='light yellow')
             self.staID.place(x=0, y=40)
             # staff's name
-            self.nameview = Label(self.rightmastab, text="Your name", font=('arial 20 bold'), fg='black', bg='light yellow')
+            self.nameview = Label(self.rightmastab, text="Your name", font=self.f1, fg='black', bg='light yellow')
             self.nameview.place(x=0, y=110)
             # password
-            self.pwview = Label(self.rightmastab, text="Password", font=('arial 20 bold'), fg='black',bg='light yellow')
+            self.pwview = Label(self.rightmastab, text="Password", font=self.f1, fg='black',bg='light yellow')
             self.pwview.place(x=0, y=180)
             # age
-            self.ageview = Label(self.rightmastab, text='Age', font=('arial 20 bold'), fg='black', bg='light yellow')
+            self.ageview = Label(self.rightmastab, text='Age', font=self.f1, fg='black', bg='light yellow')
             self.ageview.place(x=0, y=250)
             # gender
-            self.genderview = Label(self.rightmastab, text='Gender', font=('arial 20 bold'), fg='black', bg='light yellow')
+            self.genderview = Label(self.rightmastab, text='Gender', font=self.f1, fg='black', bg='light yellow')
             self.genderview.place(x=0, y=320)
             # phone
-            self.phoneview = Label(self.rightmastab, text='Phone', font=('arial 20 bold'), fg='black', bg='light yellow')
+            self.phoneview = Label(self.rightmastab, text='Phone', font=self.f1, fg='black', bg='light yellow')
             self.phoneview.place(x=0, y=390)
             # available date
-            self.dateview = Label(self.rightmastab, text='Available Date: DD/MM', font=('arial 18 bold'), fg='black', bg='light yellow')
+            self.dateview = Label(self.rightmastab, text='Available Date: DD/MM', font=self.f1, fg='black', bg='light yellow')
             self.dateview.place(x=0, y=460)
-            self.dateviewde = Label(self.rightmastab, text="(If you aren't a doctor please fill 0)" , font=('arial 16 bold'),fg='black',bg='light yellow')
+            self.dateviewde = Label(self.rightmastab, text="(If you aren't a doctor please fill 0)" , font=self.f1,fg='black',bg='light yellow')
             self.dateviewde.place(x=0, y=485)
 
             # isDr
-            self.isDrview = Label(self.rightmastab, text='Is a Doctor: '+str(sta_isDr_view) , font=('arial 20 bold'), fg='black',bg='light yellow')
+            self.isDrview = Label(self.rightmastab, text='Is a Doctor: '+str(sta_isDr_view) , font=self.f1, fg='black',bg='light yellow')
             self.isDrview.place(x=0, y=540)
 
             # entry for right labels

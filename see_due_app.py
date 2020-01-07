@@ -1,6 +1,5 @@
 from tkinter import *
-import sqlite3
-import datetime
+import sqlite3, datetime
 
 today = datetime.date.today()
 
