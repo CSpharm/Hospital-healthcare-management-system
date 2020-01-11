@@ -2,7 +2,7 @@ import sqlite3
 from tkinter import *
 import datetime
 
-today= datetime.datetime.today()
+today = datetime.date.today()
 t = str(today).split('-')
 
 class WindowtoseeAppointments:
@@ -40,9 +40,14 @@ class WindowtoseeAppointments:
 
             aD = str(re[1]).split('-')
 
+            print(aD[0])
+            print(t[2])
+
             # print the future appointments
-            if (aD[0] > t[0]) or (aD[0] == t[0] and aD[1] > t[1]) or (aD[0] == t[0] and aD[1] == t[1] and (aD[2] > t[2])):
-                appList.insert(END, str(re[0]) + '         ' + str(re[1]) + '           ' + isAP + '        ' + str(re[3]))
+            if (aD[0] > t[0]) or (aD[0] == t[0] and aD[1] > t[1]) or \
+                    (aD[0] == t[0] and aD[1] == t[1] and aD[2] >= t[2]):
+                appList.insert(END, str(re[0]) + '       ' + str(re[1]) + '          ' + isAP + '        ' + str(re[3]))
+
 
         # commit and close the db
         conn_see.commit()

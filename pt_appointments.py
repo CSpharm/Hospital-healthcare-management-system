@@ -144,9 +144,9 @@ class WindowForAppointments:
             self.li_adID.append(row[3])
             appD = str(d1).split('-')
 
-            # select those appointment dates after today
+            # limit the condition to the dates (start from today)
             if (appD[0] > t[0]) or (appD[0] == t[0] and appD[1] > t[1]) \
-                    or (appD[0] == t[0] and appD[1] == t[1] and (appD[2] > t[2])):
+                    or (appD[0] == t[0] and appD[1] == t[1] and (appD[2] >= t[2])):
                 drnameList.insert(END, str(name) + '                ' + str(d1) + '                ' + str(id) +
                                   '            ' + str(appointmentDateID))
         # commit and close the db

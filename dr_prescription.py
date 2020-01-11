@@ -256,7 +256,7 @@ class WindowForpres:
 
             self.phix_no = []
 
-            re_pre = c__del_phis.execute("SELECT orderNo FROM prescription WHERE ptID = (?)", (self.ptID,))
+            re_pre = c_del_phis.execute("SELECT orderNo FROM prescription WHERE ptID = (?)", (self.ptID,))
             for re in re_pre:
                 self.phix_no.append(re[0])
 

@@ -31,7 +31,6 @@ class WindowForMan_ptbasic:
 
         # entry for left labels
         self.ptIDleft_ent = Entry(self.leftmaptb, width=15)
-        self.ptIDleft_ent.insert(END, "1234567890")
         self.ptIDleft_ent.place(x=200, y=80)
 
         # button for submitting
@@ -200,7 +199,7 @@ class WindowForMan_ptbasic:
             c_submit.execute(sql4,(self.val30,self.val31, self.val32, self.val33, self.val34, self.val35, self.val36, self.val37))
             conn_submit.commit()
             conn_submit.close()
-            tkinter.messagebox.showinfo('Confirmation', 'modification for '+ self.val31 + 'is successful.')
+            tkinter.messagebox.showinfo('Confirmation', 'modification for  '+ self.val31 + '  is successful.')
 
 
     def delete_pt(self):

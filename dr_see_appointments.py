@@ -49,7 +49,7 @@ class WindowFordrseeappointments:
                 isApproved_view = "Already approved"
 
             if (aD2[0] > t[0]) or (aD2[0] == t[0] and aD2[1] > t[1]) or\
-                    (aD2[0] == t[0] and aD2[1] == t[1] and aD2[2] > t[2]):
+                    (aD2[0] == t[0] and aD2[1] == t[1] and aD2[2] >= t[2]):
                 appList.insert(END, '     ' + str(re[0]) + '             ' + str(re[1]) + '              ' +
                                     str(re[2]) + '                 ' + str(re[3]) + '            ' + isApproved_view)
 
