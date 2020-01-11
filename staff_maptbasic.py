@@ -164,12 +164,12 @@ class WindowForMan_ptbasic:
             conn_mapt.commit()
 
             # button for submitting
-            self.bu_update = Button(self.rightmaptb, text="Update info.", width=10, height=2,
+            self.bu_update = Button(self.rightmaptb, text="Update info.", width=12, height=2,
                                     bg='white', command=self.update_info)
             self.bu_update.place(x=140, y=600)
-            self.bu_delpt = Button(self.rightmaptb, text="Delete patient.", width=10, height=2,
+            self.bu_delpt = Button(self.rightmaptb, text="Delete patient.", width=12, height=2,
                                     bg='white', command=self.delete_pt)
-            self.bu_delpt.place(x=250, y=600)
+            self.bu_delpt.place(x=260, y=600)
 
 
     def update_info(self):

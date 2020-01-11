@@ -43,7 +43,6 @@ class WindowForMan_stabasic:
             else:
                 sta_isDr_view = 'Unsure'
 
-
             # labels
             # ID
             self.staID = Label(self.rightmastab, text="Your staff ID: "+ str(staID_view), font=self.f1, fg='black', bg='light yellow')
@@ -63,12 +62,11 @@ class WindowForMan_stabasic:
             # phone
             self.phoneview = Label(self.rightmastab, text='Phone', font=self.f1, fg='black', bg='light yellow')
             self.phoneview.place(x=0, y=390)
-
             # isDr
             self.isDrview = Label(self.rightmastab, text='Is a Doctor: '+str(sta_isDr_view) , font=self.f1, fg='black',bg='light yellow')
-            self.isDrview.place(x=0, y=540)
+            self.isDrview.place(x=0, y=450)
 
-            # entry for right labels
+            # entry
             self.nameview_ent = Entry(self.rightmastab, width=15)
             self.nameview_ent.insert(END, str(staname_view))
             self.nameview_ent.place(x=200, y=110)
@@ -89,15 +87,12 @@ class WindowForMan_stabasic:
             self.phoneview_ent.insert(END, str(staphone_view))
             self.phoneview_ent.place(x=200, y=390)
 
-            self.dateview_ent = Entry(self.rightmastab, width=15)
-            self.dateview_ent.insert(END, str(stadate_view))
-            self.dateview_ent.place(x=200, y=460)
-
             conn_mastabasic.commit()
 
             # button for submitting
-            self.modifysub = Button(self.rightmastab, text="Submit", width=15, height=2,bg='white', command=self.modify_sta_submit)
-            self.modifysub.place(x=200, y=560)
+            self.modifysub = Button(self.rightmastab, text="Submit", width=15, height=2,bg='white',
+                                    command=self.modify_sta_submit)
+            self.modifysub.place(x=200, y=490)
 
     def modify_sta_submit(self):
 
@@ -107,9 +102,8 @@ class WindowForMan_stabasic:
         self.val40 = self.ageview_ent.get()
         self.val41 = self.genderview_ent.get()
         self.val42 = self.phoneview_ent.get()
-        self.val43 = self.dateview_ent.get()
 
-        if self.val38 == '' or self.val39 == '' or self.val40 =='' or self.val41 == '' or self.val42 == '' or self.val43 == '' :
+        if self.val38 == '' or self.val39 == '' or self.val40 =='' or self.val41 == '' or self.val42 == '' :
             tkinter.messagebox.showinfo('Warning','Please fill up all the boxes')
 
         elif not (self.val39.isdigit()) or (not self.val40.isdigit()):
@@ -121,8 +115,8 @@ class WindowForMan_stabasic:
             # create a cursor
             c_substabasic = conn_substabasic.cursor()
 
-            sql5 = "UPDATE staffbasic SET staffName=(?),password=(?),age=(?),gender=(?),phone=(?),Date1=(?) WHERE staffID = (?)"
-            c_substabasic.execute(sql5,(self.val38, self.val39, self.val40, self.val41, self.val42, self.val43,self.staffID))
+            sql5 = "UPDATE staffbasic SET staffName=(?),password=(?),age=(?),gender=(?),phone=(?) WHERE staffID = (?)"
+            c_substabasic.execute(sql5,(self.val38, self.val39, self.val40, self.val41, self.val42,self.staffID))
             conn_substabasic.commit()
             conn_substabasic.close()
-            tkinter.messagebox.showinfo('Confirmation', 'modification for  ' + self.val38 + ' is successful.')
+            tkinter.messagebox.showinfo('Confirmation', 'modification for  ' + self.val38 + '  is successful.')

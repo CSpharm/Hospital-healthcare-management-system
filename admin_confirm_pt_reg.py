@@ -54,6 +54,24 @@ class WindowForConfirmPtReg:
                             command=self.confirmAll)
         self.bu_conall.place(x=350, y=430)
 
+        # check the registration
+        self.check_reg()
+
+    def check_reg(self):
+
+        # check the patient ID is valid or not
+        conn_check = sqlite3.connect('Database.db')
+        c_check = conn_check.cursor()
+
+        # create a list to store the ptID which are not confirmed yet
+        self.li_not_confirmed = []
+        re_not_confirmed = c_check.execute("SELECT ptID FROM ptbasic WHERE isconfirmed = 1")
+        for not_confirmed in re_not_confirmed:
+            self.li_not_confirmed.append(not_confirmed[0])
+
+        conn_check.commit()
+        conn_check.close()
+
     def seeRegistration(self):
 
         rootseeReg = Tk()
@@ -77,25 +95,15 @@ class WindowForConfirmPtReg:
             tkinter.messagebox.showinfo('Warning', 'Please enter a valid patient NHS number.')
 
         else:
-            # check the patient ID is valid or not
-            conn_check = sqlite3.connect('Database.db')
-            c_check = conn_check.cursor()
 
-            # create a list to store the ptID which are not confirmed yet
-            li_not_confirmed = []
-            re_not_confirmed = c_check.execute("SELECT ptID FROM ptbasic WHERE isconfirmed = 1")
-            for not_confirmed in re_not_confirmed:
-                li_not_confirmed.append(not_confirmed[0])
+            self.check_reg()
 
-            conn_check.commit()
-            conn_check.close()
-
-            if self.val60 not in li_not_confirmed:
+            if self.val60 not in self.li_not_confirmed:
                 tkinter.messagebox.showinfo('Warning', 'Wrong NHS ID.')
             else:
                 # confirm one registration
                 conn_con_one = sqlite3.connect('Database.db')
-                c_con_one = conn_con_one_reg.cursor()
+                c_con_one = conn_con_one.cursor()
 
                 c_con_one.execute("UPDATE ptbasic SET isconfirmed = 2 WHERE ptID = (?)",(self.val60,))
                 conn_con_one.commit()
@@ -104,12 +112,18 @@ class WindowForConfirmPtReg:
 
     def confirmAll(self):
 
-        # confirm all the registrations
-        conn_con_all = sqlite3.connect('Database.db')
-        c_con_all = conn_con_all.cursor()
+        # check if there is any registration, if yes then just confirm all of them
 
-        c_con_all.execute("UPDATE ptbasic SET isconfirmed = 2 WHERE isconfirmed = 1")
-        conn_con_all.commit()
-        conn_con_all.close()
+        if self.li_not_confirmed:
+            # confirm all the registrations
+            conn_con_all = sqlite3.connect('Database.db')
+            c_con_all = conn_con_all.cursor()
 
-        tkinter.messagebox.showinfo('Confirmation', 'Successful!')
+            c_con_all.execute("UPDATE ptbasic SET isconfirmed = 2 WHERE isconfirmed = 1")
+            conn_con_all.commit()
+            conn_con_all.close()
+
+            tkinter.messagebox.showinfo('Confirmation', 'Successful!')
+
+        else:
+            tkinter.messagebox.showinfo('Warning','There is no registration.')

@@ -31,10 +31,8 @@ class WindowForstaffLogin:
 
         # entry for labels
         self.idright_ent3 = Entry(self.right3, width=20)
-        self.idright_ent3.insert(END, "1015")
         self.idright_ent3.place(x=200, y=140)
         self.pwright_ent3 = Entry(self.right3, width=20)
-        self.pwright_ent3.insert(END, "15")
         self.pwright_ent3.place(x=200, y=200)
 
         # Button to login

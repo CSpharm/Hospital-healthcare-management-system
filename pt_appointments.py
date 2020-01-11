@@ -188,7 +188,7 @@ class WindowForAppointments:
             elif self.val12 not in self.exi_drID:
                 tkinter.messagebox.showinfo('Warning', 'Invalid DrID.')
 
-            elif self.dict_IDpairs.get(self.val12)!= self.val13:
+            elif self.dict_IDpairs.get(self.val13)!= self.val12:
                 tkinter.messagebox.showinfo('Warning', 'Invalid pairs.')
 
             else:
@@ -243,11 +243,10 @@ class WindowForAppointments:
         conn_find_name.commit()
         conn_find_name.close()
 
-
         # calculate the duplicate appointment
         conn_dup = sqlite3.connect('Database.db')
         c_dup = conn_dup.cursor()
-        re_isDup = c_dup.execute("SELECT adID FROM appointments WHERE ptID = (?) ", (self.userID,))
+        re_isDup = c_dup.execute("SELECT adID FROM appointments WHERE ptID = (?) AND (isApproved != 0)", (self.userID,))
 
         # create a list to store adID
         self.li_dup_adID = []
@@ -271,7 +270,7 @@ class WindowForAppointments:
 
         for re in re_IDpairs:
             self.exi_drID.append(re[0])
-            self.dict_IDpairs[int(re[0])] = int(re[1])
+            self.dict_IDpairs[re[1]] = re[0]
 
         # commit and close the DB
         conn_IDpairs.commit()

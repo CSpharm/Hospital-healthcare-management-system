@@ -83,11 +83,9 @@ class WindowForptLogin:
 
         # entry for right labels
         self.idright_ent = Entry(self.right, width=20)
-        self.idright_ent.insert(END, "1234567890")
         self.idright_ent.place(x=200, y=140)
 
         self.pwright_ent = Entry(self.right, width=20)
-        self.pwright_ent.insert(0, "1")
         self.pwright_ent.place(x=200, y=200)
 
         # Button to register

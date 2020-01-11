@@ -77,6 +77,8 @@ class WindowForpres:
             address = row[6]
             allergy = row[7]
 
+        self.allergy = allergy
+
         self.lptname = Label(self.leftp, text="Patient's Name: " + str(ptname), font=self.f1, fg='black', bg='pink')
         self.lptname.place(x=0, y=100)
         self.lage = Label(self.leftp, text="Age:" + str(age), font=self.f1, fg='black', bg='pink')
@@ -143,7 +145,7 @@ class WindowForpres:
                 self.ltoday = Label(self.rightp, text="Today: " + str(today), font=self.f1, fg='black', bg='lightgreen')
                 self.ltoday.place(x=400, y=50)
                 # label for the appointment date
-                self.lappdate = Label(self.rightp, text="Appointment Date:   " + str(li_appDate), font=self.f1,
+                self.lappdate = Label(self.rightp, text="Appointment Date:   " + str(self.li_appDate), font=self.f1,
                                       fg='black', bg='lightgreen')
                 self.lappdate.place(x=0, y=100)
 
@@ -187,6 +189,9 @@ class WindowForpres:
                 self.subd = Button(self.rightp, text="Submit", font=self.f1, fg='black', bg='lightgreen',
                                    command=self.delpx)
                 self.subd.place(x=280, y=480)
+
+                # show the allergy
+                tkinter.messagebox.showinfo('Warning', 'Allergy:  '+str(self.allergy))
 
             else:
                 self.li_appDate.append(appDate)
@@ -245,6 +250,20 @@ class WindowForpres:
             tkinter.messagebox.showinfo('Warning', 'The number should be an integer.')
 
         else:
+            # check the input is valid or not
+            conn_del_phis = sqlite3.connect('Database.db')
+            c_del_phis = conn_del_phis.cursor()
+
+            self.phix_no = []
+
+            re_pre = c__del_phis.execute("SELECT orderNo FROM prescription WHERE ptID = (?)", (self.ptID,))
+            for re in re_pre:
+                self.phix_no.append(re[0])
+
+            conn_del_phis.commit()
+            conn_del_phis.close()
+
+            # check the date is today or not (cannot delete previous med history)
             conn_date = sqlite3.connect('Database.db')
             c_date = conn_date.cursor()
 

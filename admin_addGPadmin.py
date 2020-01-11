@@ -4,6 +4,7 @@ import tkinter.messagebox
 import tkinter.font as tkFont
 
 class WindowForaddGPadmin:
+
     def __init__(self,ad):
         self.ad = ad
 
@@ -85,14 +86,14 @@ class WindowForaddGPadmin:
         elif (not self.val44.isdigit()) or (not self.val46.isdigit()) or (not self.val47.isdigit()):
             tkinter.messagebox.showinfo('Warning', 'The staff ID ,password,and age should contain only integers.')
 
-        elif (self.val50 != 0) or (self.val50 != 1):
-            tkinter.messagebox.showinfo('Warning','isDr should be 0 or 1.')
-
         elif len(self.val44) != 4:
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. Please enter 4-digit staff ID')
 
         elif int(self.val44) in self.li_ex_staffID:
             tkinter.messagebox.showinfo('Warning', 'Invalid staff ID. The ID is already in the database')
+
+        elif (int(self.val50) != 0) and (int(self.val50) != 1):
+            tkinter.messagebox.showinfo('Warning','isDr should be 0 or 1.')
 
         else:
             # add a new GP

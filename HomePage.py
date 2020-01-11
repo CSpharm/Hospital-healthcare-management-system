@@ -9,13 +9,13 @@ class WindowForHome:
         self.h = h
 
         # create frame
-        self.lefth = Frame(h, width=630, height = 720, bg='burlywood1')
+        self.lefth = Frame(h, width=630, height = 720, bg='khaki')
         self.lefth.pack(side=LEFT)
         self.righth = Frame(h, width= 570, height = 720, bg = 'light yellow')
         self.righth.pack(side=RIGHT)
 
         # heading
-        self.lhh = Label(self.lefth, text="Welcome to UCLH.", font = ('arial 30 bold'), fg='black', bg='burlywood1')
+        self.lhh = Label(self.lefth, text="Welcome to UCLH.", font = ('arial 30 bold'), fg='black', bg='khaki')
         self.lhh.place(x=0,y=0)
 
         # identity for pt / staff
